@@ -30,9 +30,9 @@ func get_boardPosition():
 func _get_squarePosition():
 	return Vector2(offsetCol + boardPosition.x * width, offsetRow + boardPosition.y * width)
 
-func set_piece(piece):
-	add_child(piece)
-	self.piece = piece
+func set_piece(newPiece):
+	add_child(newPiece)
+	self.piece = newPiece
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

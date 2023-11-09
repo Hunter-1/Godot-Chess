@@ -1,10 +1,102 @@
-[gd_scene load_steps=4 format=3 uid="uid://bt7iby583yijx"]
+[gd_scene load_steps=17 format=3 uid="uid://bt7iby583yijx"]
 
-[ext_resource type="Texture2D" uid="uid://ducbi7m76gmdr" path="res://art/temp.png" id="1_n8pcf"]
 [ext_resource type="Script" path="res://piece.gd" id="1_ole5j"]
+[ext_resource type="Texture2D" uid="uid://m6fosmv30qs1" path="res://art/Chess_Pieces_Sprite.png" id="2_623se"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_43s4f"]
 size = Vector2(100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xolkh"]
+atlas = ExtResource("2_623se")
+region = Rect2(0, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_arkk5"]
+atlas = ExtResource("2_623se")
+region = Rect2(100, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y6og3"]
+atlas = ExtResource("2_623se")
+region = Rect2(200, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3uh3x"]
+atlas = ExtResource("2_623se")
+region = Rect2(300, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_joy3f"]
+atlas = ExtResource("2_623se")
+region = Rect2(400, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eeyq2"]
+atlas = ExtResource("2_623se")
+region = Rect2(500, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w014a"]
+atlas = ExtResource("2_623se")
+region = Rect2(0, 100, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ll0uk"]
+atlas = ExtResource("2_623se")
+region = Rect2(100, 100, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j1uh8"]
+atlas = ExtResource("2_623se")
+region = Rect2(200, 100, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v46wt"]
+atlas = ExtResource("2_623se")
+region = Rect2(300, 100, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lgkye"]
+atlas = ExtResource("2_623se")
+region = Rect2(400, 100, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_btcnm"]
+atlas = ExtResource("2_623se")
+region = Rect2(500, 100, 100, 100)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_u48fa"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xolkh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_arkk5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y6og3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3uh3x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_joy3f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eeyq2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w014a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ll0uk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j1uh8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v46wt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lgkye")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_btcnm")
+}],
+"loop": true,
+"name": &"Piece Appearance",
+"speed": 0.0
+}]
 
 [node name="Piece" type="Area2D"]
 script = ExtResource("1_ole5j")
@@ -13,6 +105,7 @@ script = ExtResource("1_ole5j")
 position = Vector2(50, 50)
 shape = SubResource("RectangleShape2D_43s4f")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(50, 50)
-texture = ExtResource("1_n8pcf")
+sprite_frames = SubResource("SpriteFrames_u48fa")
+animation = &"Piece Appearance"
