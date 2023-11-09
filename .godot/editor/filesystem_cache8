@@ -1,6 +1,13 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1699433818
-game.tscn::PackedScene::7708300170959177335::1699432933::0::1::::<><>::
+::res://::1699521991
+board.gd::GDScript::-1::1699521418::0::1::::<>Area2D<>::
+board.tscn::PackedScene::763283879189510639::1699521991::0::1::::<><>::
+game.tscn::PackedScene::7708300170959177335::1699521990::0::1::::<><>::res://game.gd<>uid://k40f6d3qxti2::::res://board.tscn<>res://board.gd
 icon.svg::CompressedTexture2D::5986835555765405322::1699259841::1699259848::1::::<><>::
-::res://art/::1699259977
+piece.tscn::PackedScene::3786557631123941001::1699521990::0::1::::<><>::
+game.gd::GDScript::-1::1699520338::0::1::::<>Node<>::
+square.gd::GDScript::-1::1699521910::0::1::::<>Area2D<>::
+square.tscn::PackedScene::7070875938826744959::1699521990::0::1::::<><>::res://square.gd
+::res://art/::1699522134
 Chess_Pieces_Sprite.svg::CompressedTexture2D::6604753891503781997::1699259975::1699259977::1::::<><>::
+temp.png::CompressedTexture2D::8567244383472543431::1699522134::1699522136::1::::<><>::

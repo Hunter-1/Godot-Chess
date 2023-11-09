@@ -1,3 +1,7 @@
+res://board.tscn
+res://square.tscn
+res://board.gd
+res://square.gd
 res://game.tscn
 res://piece.tscn
-res://square.tscn
+res://game.gd
