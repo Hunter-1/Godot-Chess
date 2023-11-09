@@ -99,6 +99,7 @@ animations = [{
 }]
 
 [node name="Piece" type="Area2D"]
+z_index = 1
 script = ExtResource("1_ole5j")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -109,3 +110,5 @@ shape = SubResource("RectangleShape2D_43s4f")
 position = Vector2(50, 50)
 sprite_frames = SubResource("SpriteFrames_u48fa")
 animation = &"Piece Appearance"
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
