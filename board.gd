@@ -3,7 +3,7 @@ extends Area2D
 var Squares = []
 var size: int = 8
 
-func _init():
+func _ready():
 	for i in range(size):
 		var row = []
 		for j in range(size):
