@@ -12,7 +12,11 @@ func _ready():
 			add_child(square)
 			row.append(square)
 		Squares.append(row)
-	
+	add_piece(3,4)
+
+func add_piece(row: int, col: int):
+	var piece = preload("res://piece.tscn").instantiate()
+	Squares[row][col].set_piece(piece)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

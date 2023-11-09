@@ -7,12 +7,14 @@ var offsetCol = 50
 var offsetRow = 50
 var width = 100
 
+var piece
+
 var white_color = Color(1,1,1)
 var black_color = Color(0,0,0)
 
 func initialize(row: int, col: int):
 	boardPosition = Vector2i(row, col)
-	position = Vector2(offsetCol + col * width, offsetRow + row * width)
+	position = _get_squarePosition()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -24,6 +26,14 @@ func _ready():
 
 func get_boardPosition():
 	return boardPosition
+
+func _get_squarePosition():
+	return Vector2(offsetCol + boardPosition.x * width, offsetRow + boardPosition.y * width)
+
+func set_piece(piece):
+	add_child(piece)
+	self.piece = piece
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
