@@ -33,10 +33,10 @@ func _process(delta):
 		global_position = get_global_mouse_position()
 		global_position += Vector2(pickup_offset, pickup_offset)
 
+func set_is_picked_up(boolean: bool):
+	is_picked_up = boolean
+	if !is_picked_up:
+		position = Vector2.ZERO
 
-func _on_input_event(viewport, event, shape_idx):
-	if event.is_action_pressed("Click"):
-		if is_picked_up:
-			is_picked_up = false
-		is_picked_up = true
-		
+func get_is_picked_up():
+	return is_picked_up
