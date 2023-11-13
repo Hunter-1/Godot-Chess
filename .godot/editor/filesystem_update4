@@ -1,8 +1,8 @@
-res://board.tscn
 res://square.tscn
 res://board.gd
 res://square.gd
+res://piece.gd
+res://board.tscn
+res://piece_movement.gd
 res://game.tscn
 res://piece.tscn
-res://game.gd
-res://piece.gd
