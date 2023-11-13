@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://square.gd" id="1_co8kv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_72xvd"]
-size = Vector2(96, 96)
+size = Vector2(100, 100)
 
-[node name="Square" type="Area2D"]
+[node name="Square" type="Area2D" groups=["squares"]]
 script = ExtResource("1_co8kv")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
@@ -13,5 +13,7 @@ polygon = PackedVector2Array(0, 0, 100, 0, 100, 100, 0, 100)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
-position = Vector2(16, 40)
+position = Vector2(50, 50)
 shape = SubResource("RectangleShape2D_72xvd")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
