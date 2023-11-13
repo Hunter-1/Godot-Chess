@@ -40,3 +40,9 @@ func set_is_picked_up(boolean: bool):
 
 func get_is_picked_up():
 	return is_picked_up
+
+func get_pieceType():
+	return pieceType
+
+func get_pieceColor():
+	return pieceColor

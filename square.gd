@@ -14,6 +14,7 @@ var piece
 var white_color = Color(1,1,1)
 var black_color = Color(0,0,0)
 
+var is_pickable: bool = false
 var is_second_pick: bool = false
 
 func initialize(row: int, col: int):
@@ -34,6 +35,9 @@ func get_boardPosition():
 func _get_squarePosition():
 	return Vector2(offsetCol + boardPosition.x * width, offsetRow + boardPosition.y * width)
 
+func get_piece():
+	return piece
+
 func set_piece(newPiece):
 	add_child(newPiece)
 	self.piece = newPiece
@@ -46,6 +50,10 @@ func remove_piece():
 
 func set_is_second_pick(boolean: bool):
 	is_second_pick = boolean
+
+func set_is_pickable(boolean: bool):
+	is_pickable = boolean
+	$Selection_Square.visible = is_pickable
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -60,5 +68,5 @@ func _on_input_event(viewport, event, shape_idx):
 			else:
 				print(boardPosition)
 		else:
-			if piece == null:
+			if (piece == null && is_pickable):
 				emit_signal("square_clicked",boardPosition,piece)

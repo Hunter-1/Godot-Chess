@@ -11,6 +11,11 @@ script = ExtResource("1_co8kv")
 [node name="Polygon2D" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(0, 0, 100, 0, 100, 100, 0, 100)
 
+[node name="Selection_Square" type="Polygon2D" parent="."]
+visible = false
+color = Color(1, 0.211765, 1, 0.337255)
+polygon = PackedVector2Array(0, 0, 100, 0, 99.8539, 14.3186, 100, 100, 0, 100)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
 position = Vector2(50, 50)
