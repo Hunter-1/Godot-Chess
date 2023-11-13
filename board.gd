@@ -24,6 +24,7 @@ func _ready():
 	add_piece(create_piece(2,0),7,5)
 	add_piece(create_piece(4,1),2,5)
 	add_piece(create_piece(1,0),3,2)
+	add_piece(create_piece(0,1),1,7)
 	move_piece(2,5,2,4)
 
 	
@@ -69,32 +70,59 @@ func _on_square_clicked(newBoardPosition: Vector2i, newPiece):
 func _check_movement_squares(boardPosition: Vector2i, type: int):
 	match type:
 		0: #King
-			pass
+			_spread_movement(boardPosition,type)
 		1: #Queen
-			_check_straight_squares(boardPosition)
-			_check_diagonal_squares(boardPosition)
+			_spread_movement(boardPosition,type)
 		2: #Bishop
-			_check_diagonal_squares(boardPosition)
+			_spread_movement(boardPosition,type)
 		3: #Knight
 			pass
 		4: #Rook
-			_check_straight_squares(boardPosition)
+			_spread_movement(boardPosition,type)
 		5: #Pawn
 			pass
 
-func _check_straight_squares(boardPosition: Vector2i):
-	for i in range(size):
-		var square = Squares[i][boardPosition.x]
-		if square.get_boardPosition() != boardPosition && square.get_piece() == null:
-			square.set_is_pickable(true)
-		square = Squares[boardPosition.y][i]
-		if square.get_boardPosition() != boardPosition && square.get_piece() == null:
-			square.set_is_pickable(true)
+#func _check_straight_squares(boardPosition: Vector2i):
+#	for i in range(size):
+#		var square = Squares[i][boardPosition.x]
+#		if square.get_boardPosition() != boardPosition && square.get_piece() == null:
+#			square.set_is_pickable(true)
+#		square = Squares[boardPosition.y][i]
+#		if square.get_boardPosition() != boardPosition && square.get_piece() == null:
+#			square.set_is_pickable(true)
 
-func _check_diagonal_squares(boardPosition: Vector2i):
-	for i in range(size):
-		for j in range(size):
-			var square = Squares[i][j]
-			var difference = square.get_boardPosition() - boardPosition
-			if abs(difference.x) == abs(difference.y) && square.get_boardPosition() != boardPosition && square.get_piece() == null:
-				square.set_is_pickable(true)
+#func _check_diagonal_squares(boardPosition: Vector2i):
+#	for i in range(size):
+#		for j in range(size):
+#			var square = Squares[i][j]
+#			var difference = square.get_boardPosition() - boardPosition
+#			if abs(difference.x) == abs(difference.y) && square.get_boardPosition() != boardPosition && square.get_piece() == null:
+#				square.set_is_pickable(true)
+
+func _spread_movement(boardPosition: Vector2i, type):
+	var vectors = []
+	if type != 2:
+		vectors.append(Vector2i(1,0))
+		vectors.append(Vector2i(-1,0))
+		vectors.append(Vector2i(0,1))
+		vectors.append(Vector2i(0,-1))
+	if type != 4:
+		vectors.append(Vector2i(1,1))
+		vectors.append(Vector2i(-1,1))
+		vectors.append(Vector2i(1,-1))
+		vectors.append(Vector2i(-1,-1))
+	for i in range(0,vectors.size()):
+		var vector = vectors[i]
+		var tempPosition = boardPosition
+		tempPosition += vector
+		while (tempPosition.x <= 7 && 
+		tempPosition.x >= 0 &&
+		tempPosition.y <= 7 && 
+		tempPosition.y >= 0):
+			var square = Squares[tempPosition.y][tempPosition.x]
+			if square.get_piece() != null:
+				break
+			square.set_is_pickable(true)
+			if type == 0:
+				break
+			tempPosition += vector
