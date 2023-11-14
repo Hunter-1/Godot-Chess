@@ -85,6 +85,7 @@ func _after_place_piece():
 func _check_movement_squares(boardPosition: Vector2i, piece):
 	var type = piece.get_pieceType()
 	var vectors = []
+	var direction = piece.get_pieceColor() * -2 + 1
 	if type != 2 && type != 3 && type != 5:
 		vectors.append(Vector2i(1,0))
 		vectors.append(Vector2i(-1,0))
@@ -105,7 +106,9 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 		vectors.append(Vector2i(-2,1))
 		vectors.append(Vector2i(-1,2))
 	if type == 5:
-		vectors.append(Vector2i(0,(piece.get_pieceColor() * -2) + 1))
+		vectors.append(Vector2i(0,direction))
+		vectors.append(Vector2i(1,direction))
+		vectors.append(Vector2i(-1,direction))
 	for i in range(0,vectors.size()):
 		var vector = vectors[i]
 		var tempPosition = boardPosition
@@ -117,10 +120,11 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 			var square = Squares[tempPosition.y][tempPosition.x]
 			if square.get_piece() != null:
 				if square.get_piece().get_pieceColor() != piece.get_pieceColor():
-					if type != 5:
+					if type != 5 || i > 0:
 						square.set_is_pickable(true)
 				break
-			square.set_is_pickable(true)
+			if type != 5 || i == 0:
+				square.set_is_pickable(true)
 			if type == 0 || type == 3 || type == 5:
 				if type == 5:
 					pass
