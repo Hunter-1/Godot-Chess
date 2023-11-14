@@ -1,7 +1,5 @@
 extends Area2D
 
-
-
 var Squares = []
 var size: int = 8
 
@@ -20,6 +18,7 @@ func _ready():
 			square.connect("piece_clicked",self._on_piece_clicked)
 			square.connect("move_piece", self._on_square_move_piece)
 			square.connect("capture_piece", self._on_square_capture_piece)
+			square.connect("no_piece", self._on_no_piece)
 			
 		Squares.append(row)
 	add_piece(create_piece(2,0),7,5)
@@ -58,6 +57,14 @@ func _on_piece_clicked(boardPosition: Vector2i, piece):
 	get_tree().call_group("squares", "set_is_second_pick",true)
 	_check_movement_squares(boardPosition,piece)
 
+func _on_no_piece(boardPosition: Vector2i):
+	if picked_up_boardPosition == boardPosition:
+		picked_up_piece.set_is_picked_up(false)
+		is_piece_picked_up = false
+		picked_up_boardPosition = Vector2i.ZERO
+		get_tree().call_group("squares", "set_is_second_pick",false)
+		get_tree().call_group("squares", "set_is_pickable",false)
+
 func _on_square_move_piece(newBoardPosition: Vector2i):
 	move_piece(
 	picked_up_boardPosition.y,
@@ -85,7 +92,7 @@ func _after_place_piece():
 func _check_movement_squares(boardPosition: Vector2i, piece):
 	var type = piece.get_pieceType()
 	var vectors = []
-	var direction = piece.get_pieceColor() * -2 + 1
+	var direction = -(piece.get_pieceColor() * -2 + 1)
 	if type != 2 && type != 3 && type != 5:
 		vectors.append(Vector2i(1,0))
 		vectors.append(Vector2i(-1,0))

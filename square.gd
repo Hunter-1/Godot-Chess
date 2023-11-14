@@ -3,6 +3,7 @@ extends Area2D
 signal piece_clicked(boardPosition: Vector2i, piece)
 signal move_piece(boardPosition: Vector2i)
 signal capture_piece(boardPosition: Vector2i)
+signal no_piece(boardPosition: Vector2i)
 
 var boardPosition: Vector2i
 
@@ -74,4 +75,5 @@ func _on_input_event(viewport, event, shape_idx):
 					emit_signal("move_piece",boardPosition)
 				else:
 					emit_signal("capture_piece",boardPosition)
-			
+			else:
+				emit_signal("no_piece",boardPosition)
