@@ -109,6 +109,7 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 		vectors.append(Vector2i(0,direction))
 		vectors.append(Vector2i(1,direction))
 		vectors.append(Vector2i(-1,direction))
+		vectors.append(Vector2i(0,direction * 2))
 	for i in range(0,vectors.size()):
 		var vector = vectors[i]
 		var tempPosition = boardPosition
@@ -123,6 +124,8 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 					if type != 5 || i > 0:
 						square.set_is_pickable(true)
 				break
+			if type == 5 && i == 3 && piece.get_has_moved() == false:
+				square.set_is_pickable(true)
 			if type != 5 || i == 0:
 				square.set_is_pickable(true)
 			if type == 0 || type == 3 || type == 5:
