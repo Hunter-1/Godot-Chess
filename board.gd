@@ -25,9 +25,9 @@ func _ready():
 	add_piece(create_piece(4,1),2,5)
 	add_piece(create_piece(1,0),3,2)
 	add_piece(create_piece(0,1),1,7)
-	move_piece(2,5,2,4)
-
-	
+	add_piece(create_piece(3,1),4,6)
+	add_piece(create_piece(5,1),1,1)
+	add_piece(create_piece(5,0),1,2)
 
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
 	add_piece(remove_piece(oldRow,oldCol),newRow, newCol)
@@ -52,8 +52,7 @@ func _on_piece_clicked(boardPosition: Vector2i, piece):
 	picked_up_boardPosition = boardPosition
 	picked_up_piece = piece
 	get_tree().call_group("squares", "set_is_second_pick",true)
-	var type = piece.get_pieceType()
-	_check_movement_squares(boardPosition,type)
+	_check_movement_squares(boardPosition,piece)
 
 func _on_square_clicked(newBoardPosition: Vector2i, newPiece):
 	move_piece(
@@ -67,20 +66,45 @@ func _on_square_clicked(newBoardPosition: Vector2i, newPiece):
 	get_tree().call_group("squares", "set_is_second_pick",false)
 	get_tree().call_group("squares", "set_is_pickable",false)
 
-func _check_movement_squares(boardPosition: Vector2i, type: int):
-	match type:
-		0: #King
-			_spread_movement(boardPosition,type)
-		1: #Queen
-			_spread_movement(boardPosition,type)
-		2: #Bishop
-			_spread_movement(boardPosition,type)
-		3: #Knight
-			pass
-		4: #Rook
-			_spread_movement(boardPosition,type)
-		5: #Pawn
-			pass
+func _check_movement_squares(boardPosition: Vector2i, piece):
+	var type = piece.get_pieceType()
+	var vectors = []
+	if type != 2 && type != 3 && type != 5:
+		vectors.append(Vector2i(1,0))
+		vectors.append(Vector2i(-1,0))
+		vectors.append(Vector2i(0,1))
+		vectors.append(Vector2i(0,-1))
+	if type != 4 && type != 3 && type != 5:
+		vectors.append(Vector2i(1,1))
+		vectors.append(Vector2i(-1,1))
+		vectors.append(Vector2i(1,-1))
+		vectors.append(Vector2i(-1,-1))
+	if type == 3:
+		vectors.append(Vector2i(1,2))
+		vectors.append(Vector2i(2,1))
+		vectors.append(Vector2i(-1,-2))
+		vectors.append(Vector2i(-2,-1))
+		vectors.append(Vector2i(1,-2))
+		vectors.append(Vector2i(2,-1))
+		vectors.append(Vector2i(-2,1))
+		vectors.append(Vector2i(-1,2))
+	if type == 5:
+		vectors.append(Vector2i(0,(piece.get_pieceColor() * -2) + 1))
+	for i in range(0,vectors.size()):
+		var vector = vectors[i]
+		var tempPosition = boardPosition
+		tempPosition += vector
+		while (tempPosition.x <= 7 && 
+		tempPosition.x >= 0 &&
+		tempPosition.y <= 7 && 
+		tempPosition.y >= 0):
+			var square = Squares[tempPosition.y][tempPosition.x]
+			if square.get_piece() != null:
+				break
+			square.set_is_pickable(true)
+			if type == 0 || type == 3 || type == 5:
+				break
+			tempPosition += vector
 
 #func _check_straight_squares(boardPosition: Vector2i):
 #	for i in range(size):
@@ -98,31 +122,3 @@ func _check_movement_squares(boardPosition: Vector2i, type: int):
 #			var difference = square.get_boardPosition() - boardPosition
 #			if abs(difference.x) == abs(difference.y) && square.get_boardPosition() != boardPosition && square.get_piece() == null:
 #				square.set_is_pickable(true)
-
-func _spread_movement(boardPosition: Vector2i, type):
-	var vectors = []
-	if type != 2:
-		vectors.append(Vector2i(1,0))
-		vectors.append(Vector2i(-1,0))
-		vectors.append(Vector2i(0,1))
-		vectors.append(Vector2i(0,-1))
-	if type != 4:
-		vectors.append(Vector2i(1,1))
-		vectors.append(Vector2i(-1,1))
-		vectors.append(Vector2i(1,-1))
-		vectors.append(Vector2i(-1,-1))
-	for i in range(0,vectors.size()):
-		var vector = vectors[i]
-		var tempPosition = boardPosition
-		tempPosition += vector
-		while (tempPosition.x <= 7 && 
-		tempPosition.x >= 0 &&
-		tempPosition.y <= 7 && 
-		tempPosition.y >= 0):
-			var square = Squares[tempPosition.y][tempPosition.x]
-			if square.get_piece() != null:
-				break
-			square.set_is_pickable(true)
-			if type == 0:
-				break
-			tempPosition += vector
