@@ -1,7 +1,8 @@
 extends Area2D
 
 signal piece_clicked(boardPosition: Vector2i, piece)
-signal square_clicked(boardPosition: Vector2i)
+signal move_piece(boardPosition: Vector2i)
+signal capture_piece(boardPosition: Vector2i)
 
 var boardPosition: Vector2i
 
@@ -43,10 +44,10 @@ func set_piece(newPiece):
 	self.piece = newPiece
 
 func remove_piece():
-	var piece = self.piece
-	self.piece = null
 	remove_child(piece)
-	return piece
+	var pieceToReturn = piece
+	piece = null
+	return pieceToReturn
 
 func set_is_second_pick(boolean: bool):
 	is_second_pick = boolean
@@ -68,5 +69,9 @@ func _on_input_event(viewport, event, shape_idx):
 			else:
 				print(boardPosition)
 		else:
-			if (piece == null && is_pickable):
-				emit_signal("square_clicked",boardPosition,piece)
+			if (is_pickable):
+				if (piece == null):
+					emit_signal("move_piece",boardPosition)
+				else:
+					emit_signal("capture_piece",boardPosition)
+			

@@ -15,6 +15,7 @@ extends Area2D
 var pieceType: int
 var pieceColor: int
 
+var has_moved: bool = false
 var is_picked_up: bool = false
 var pickup_offset: int = -50
 
@@ -46,3 +47,9 @@ func get_pieceType():
 
 func get_pieceColor():
 	return pieceColor
+
+func get_has_moved():
+	return has_moved
+
+func set_has_moved(boolean: bool):
+	has_moved = boolean

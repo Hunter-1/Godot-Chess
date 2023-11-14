@@ -18,7 +18,8 @@ func _ready():
 			add_child(square)
 			row.append(square)
 			square.connect("piece_clicked",self._on_piece_clicked)
-			square.connect("square_clicked", self._on_square_clicked)
+			square.connect("move_piece", self._on_square_move_piece)
+			square.connect("capture_piece", self._on_square_capture_piece)
 			
 		Squares.append(row)
 	add_piece(create_piece(2,0),7,5)
@@ -31,7 +32,6 @@ func _ready():
 
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
 	add_piece(remove_piece(oldRow,oldCol),newRow, newCol)
-	print("Piece Moves from ",oldRow,oldCol," to ",newRow,newCol)
 
 func get_piece(row: int, col: int):
 	return Squares[row][col].get_piece()
@@ -47,6 +47,10 @@ func create_piece(type: int, color: int):
 	piece.initialize(type,color)
 	return piece
 
+func capture_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
+	remove_piece(newRow, newCol).queue_free()
+	move_piece(oldRow, oldCol, newRow, newCol)
+
 func _on_piece_clicked(boardPosition: Vector2i, piece):
 	is_piece_picked_up = true
 	picked_up_boardPosition = boardPosition
@@ -54,13 +58,25 @@ func _on_piece_clicked(boardPosition: Vector2i, piece):
 	get_tree().call_group("squares", "set_is_second_pick",true)
 	_check_movement_squares(boardPosition,piece)
 
-func _on_square_clicked(newBoardPosition: Vector2i, newPiece):
+func _on_square_move_piece(newBoardPosition: Vector2i):
 	move_piece(
 	picked_up_boardPosition.y,
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
+	_after_place_piece()
+
+func _on_square_capture_piece(newBoardPosition: Vector2i):
+	capture_piece(
+	picked_up_boardPosition.y,
+	picked_up_boardPosition.x,
+	newBoardPosition.y,
+	newBoardPosition.x)
+	_after_place_piece()
+
+func _after_place_piece():
 	picked_up_piece.set_is_picked_up(false)
+	picked_up_piece.set_has_moved(true)
 	is_piece_picked_up = false
 	picked_up_boardPosition = Vector2i.ZERO
 	get_tree().call_group("squares", "set_is_second_pick",false)
@@ -100,9 +116,14 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 		tempPosition.y >= 0):
 			var square = Squares[tempPosition.y][tempPosition.x]
 			if square.get_piece() != null:
+				if square.get_piece().get_pieceColor() != piece.get_pieceColor():
+					if type != 5:
+						square.set_is_pickable(true)
 				break
 			square.set_is_pickable(true)
 			if type == 0 || type == 3 || type == 5:
+				if type == 5:
+					pass
 				break
 			tempPosition += vector
 
