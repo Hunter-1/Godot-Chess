@@ -40,3 +40,5 @@ position = Vector2(150, 450)
 shape = SubResource("RectangleShape2D_j6dmg")
 
 [node name="Log" parent="." instance=ExtResource("2_pnejd")]
+
+[node name="Place_Soundeffect" type="AudioStreamPlayer" parent="."]
