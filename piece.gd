@@ -38,6 +38,9 @@ func set_is_picked_up(boolean: bool):
 	is_picked_up = boolean
 	if !is_picked_up:
 		position = Vector2.ZERO
+		z_index = 1
+	else:
+		z_index = 2
 
 func get_is_picked_up():
 	return is_picked_up

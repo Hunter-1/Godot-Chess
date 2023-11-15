@@ -31,10 +31,10 @@ func _ready():
 		Squares.append(row)
 	add_piece(create_piece(2,0),7,5)
 	add_piece(create_piece(4,1),2,5)
-	add_piece(create_piece(1,0),3,2)
+	add_piece(create_piece(1,0),5,2)
 	add_piece(create_piece(0,1),1,7)
 	add_piece(create_piece(3,1),4,6)
-	add_piece(create_piece(5,1),1,1)
+	add_piece(create_piece(5,1),3,1)
 	add_piece(create_piece(5,0),1,2)
 
 
