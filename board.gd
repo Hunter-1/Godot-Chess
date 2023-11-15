@@ -177,7 +177,7 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 			var square = Squares[tempPosition.y][tempPosition.x]
 			if square.get_piece() != null:
 				if square.get_piece().get_pieceColor() != piece.get_pieceColor():
-					if type != 5 || i > 0:
+					if type != 5 || i > 0 && i < 3:
 						square.set_is_pickable(true)
 				break
 			if type == 5 && i == 3 && piece.get_has_moved() == false:
