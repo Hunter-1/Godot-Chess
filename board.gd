@@ -103,7 +103,7 @@ func _after_place_piece():
 func _check_movement_squares(boardPosition: Vector2i, piece):
 	var type = piece.get_pieceType()
 	var vectors = []
-	var direction = -(piece.get_pieceColor() * -2 + 1)
+	var direction = piece.get_pieceColor() * -2 + 1
 	if type != 2 && type != 3 && type != 5:
 		vectors.append(Vector2i(1,0))
 		vectors.append(Vector2i(-1,0))
