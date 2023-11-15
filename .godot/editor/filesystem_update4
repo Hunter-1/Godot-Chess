@@ -4,9 +4,5 @@ res://square.gd
 res://piece.tscn
 res://square.tscn
 res://board.tscn
-res://log_entry.gd
-res://log.tscn
-res://log_entry.tscn
-res://log.gd
 res://markings.tscn
 res://let_markings.tscn

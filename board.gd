@@ -9,6 +9,18 @@ var is_piece_picked_up: bool = false
 var picked_up_boardPosition: Vector2i
 var picked_up_piece
 
+var sounds = [
+	preload("res://art/sound1.wav"), 
+	preload("res://art/sound2.wav"), 
+	preload("res://art/sound3.wav"), 
+	preload("res://art/sound4.wav")
+	]
+	
+var pick_sounds = [ 
+	preload("res://art/sound6.wav"), 
+	preload("res://art/sound7.wav"), 
+	]
+
 func _ready():
 	for i in range(size):
 		var row = []
@@ -60,6 +72,7 @@ func capture_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
 	move_piece(oldRow, oldCol, newRow, newCol)
 
 func _on_piece_clicked(boardPosition: Vector2i, piece):
+	play_random_pick_sound()
 	is_piece_picked_up = true
 	picked_up_boardPosition = boardPosition
 	picked_up_piece = piece
@@ -93,6 +106,7 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	_after_place_piece()
 
 func _after_place_piece():
+	play_random_sound()
 	picked_up_piece.set_is_picked_up(false)
 	picked_up_piece.set_has_moved(true)
 	is_piece_picked_up = false
@@ -155,6 +169,23 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 			tempPosition += vector
 	if type == 0:
 		pass
+		
+		
+func play_random_sound():
+	var random_index = randi() % sounds.size()
+	var sound = sounds[random_index]
+	if sound:
+		var audio_player = $Place_Soundeffect
+		audio_player.stream = sound
+		audio_player.play()
+		
+func play_random_pick_sound():
+	var random_index2 = randi() % pick_sounds.size()
+	var sound = pick_sounds[random_index2]
+	if sound:
+		var audio_player = $Place_Soundeffect
+		audio_player.stream = sound
+		audio_player.play()
 
 #func _check_straight_squares(boardPosition: Vector2i):
 #	for i in range(size):
