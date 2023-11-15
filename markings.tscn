@@ -1,17 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://bub1pfbaa41et"]
+[gd_scene load_steps=3 format=3 uid="uid://bub1pfbaa41et"]
 
 [ext_resource type="Script" path="res://markings.gd" id="1_h87oh"]
+[ext_resource type="FontFile" uid="uid://cpxjkcsoyvgmv" path="res://fonts/Merriweather-Regular.ttf" id="2_61jel"]
 
 [node name="numMarkings" type="Node2D"]
 script = ExtResource("1_h87oh")
 
 [node name="Numbers" type="Label" parent="."]
 custom_minimum_size = Vector2(29, 100)
-offset_left = 60.0
-offset_right = 89.0
+offset_left = 69.0
+offset_right = 98.0
 offset_bottom = 100.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 50
+theme_override_fonts/font = ExtResource("2_61jel")
+theme_override_font_sizes/font_size = 30
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
