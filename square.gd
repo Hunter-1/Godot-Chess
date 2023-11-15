@@ -13,8 +13,8 @@ var width = 100
 
 var piece
 
-var white_color = Color(1,1,1)
-var black_color = Color(0,0,0)
+var white_color = Color(211 / 255.0, 198 / 255.0, 174 / 255.0, 255 / 255.0)
+var black_color = Color(83 / 255.0, 65 / 255.0, 53 / 255.0, 255 / 255.0)
 
 var is_pickable: bool = false
 var is_second_pick: bool = false
