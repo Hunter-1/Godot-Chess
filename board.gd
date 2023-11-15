@@ -1,5 +1,7 @@
 extends Area2D
 
+var letMarking = []
+var numMarkings = []
 var Squares = []
 var size: int = 8
 
@@ -19,6 +21,12 @@ func _ready():
 			square.connect("move_piece", self._on_square_move_piece)
 			square.connect("capture_piece", self._on_square_capture_piece)
 			square.connect("no_piece", self._on_no_piece)
+			var numMarking = preload("res://markings.tscn").instantiate()
+			numMarking.initialize(j,-1)
+			add_child(numMarking)
+			var letMarking = preload("res://let_markings.tscn").instantiate()
+			letMarking.initialize(9,j)
+			add_child(letMarking)
 			
 		Squares.append(row)
 	add_piece(create_piece(2,0),7,5)
