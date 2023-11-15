@@ -1,6 +1,10 @@
 res://game.tscn
 res://board.gd
 res://square.gd
+res://markings.gd
 res://piece.tscn
 res://square.tscn
 res://board.tscn
+res://markings.tscn
+res://let_markings.tscn
+res://let_markings.gd

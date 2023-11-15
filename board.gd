@@ -1,7 +1,7 @@
 extends Area2D
 
-
-
+var letMarking = []
+var numMarkings = []
 var Squares = []
 var size: int = 8
 
@@ -19,6 +19,12 @@ func _ready():
 			row.append(square)
 			square.connect("piece_clicked",self._on_piece_clicked)
 			square.connect("square_clicked", self._on_square_clicked)
+			var numMarking = preload("res://markings.tscn").instantiate()
+			numMarking.initialize(j,-1)
+			add_child(numMarking)
+			var letMarking = preload("res://let_markings.tscn").instantiate()
+			letMarking.initialize(9,j)
+			add_child(letMarking)
 			
 		Squares.append(row)
 	add_piece(create_piece(2,0),7,5)
@@ -26,7 +32,6 @@ func _ready():
 	add_piece(create_piece(1,0),3,2)
 	add_piece(create_piece(0,1),1,7)
 	move_piece(2,5,2,4)
-
 	
 
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
