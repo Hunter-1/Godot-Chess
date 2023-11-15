@@ -29,6 +29,7 @@ func _ready():
 	add_piece(create_piece(5,1),1,1)
 	add_piece(create_piece(5,0),1,2)
 
+
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
 	add_piece(remove_piece(oldRow,oldCol),newRow, newCol)
 
@@ -71,6 +72,7 @@ func _on_square_move_piece(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
+	$Log.append_log(0,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,false,false)
 	_after_place_piece()
 
 func _on_square_capture_piece(newBoardPosition: Vector2i):
@@ -79,6 +81,7 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
+	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,false,false)
 	_after_place_piece()
 
 func _after_place_piece():
@@ -138,8 +141,12 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 			if type == 0 || type == 3 || type == 5:
 				if type == 5:
 					pass
+				if type == 0:
+					pass
 				break
 			tempPosition += vector
+	if type == 0:
+		pass
 
 #func _check_straight_squares(boardPosition: Vector2i):
 #	for i in range(size):
