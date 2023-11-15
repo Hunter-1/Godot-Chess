@@ -9,7 +9,7 @@ var width = 100
 
 
 func initialize(row: int, col: int):
-	$Numbers.text = str(row + 1)
+	$Numbers.text = str(9 - (row + 1))
 	boardPosition = Vector2i(col,row)
 	position = _get_markingPosition()
 	

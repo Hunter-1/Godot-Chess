@@ -35,7 +35,7 @@ func get_boardPosition():
 	return boardPosition
 
 func _get_squarePosition():
-	return Vector2(offsetCol + boardPosition.x * width, offsetRow + boardPosition.y * width)
+	return Vector2(offsetCol + boardPosition.x * width, offsetRow + 7*width - boardPosition.y * width)
 
 func get_piece():
 	return piece
