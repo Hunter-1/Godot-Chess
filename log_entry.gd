@@ -4,6 +4,9 @@ extends Node
 # 1 Capture
 # 2 Castle
 
+var pieceSymbol = ["K","Q","B","N","R",""]
+var alphabet = ["a", "b", "c", "d", "e", "f", "g", "h"]
+
 var moveType: int
 
 var color: int
@@ -16,7 +19,22 @@ var check: bool
 var checkmate: bool
 
 func print_string():
-	pass
+	var output = ""
+	if moveType == 0 || moveType == 1:
+		output += pieceSymbol[pieceType]
+		output += alphabet[oldPosition.x]
+		output += str(oldPosition.y + 1)
+		if moveType == 0:
+			output += "-"
+		elif moveType == 1:
+			output += "x"
+		output += alphabet[newPosition.x]
+		output += str(newPosition.y + 1)
+		if check:
+			output += "+"
+		if checkmate:
+			output += "#"
+	return output
 
 func create_entry(moveType: int, color:int, pieceType:int, oldPosition: Vector2i, newPosition: Vector2i, check: bool, checkmate: bool):
 	self.moveType = moveType
