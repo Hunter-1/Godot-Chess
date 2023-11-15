@@ -29,6 +29,31 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
+	starting_positions()
+
+func starting_positions():
+	for i in range (size):
+		add_piece(create_piece(5,0),1,i)
+	add_piece(create_piece(4,0),0,0)
+	add_piece(create_piece(4,0),0,7)
+	add_piece(create_piece(3,0),0,1)
+	add_piece(create_piece(3,0),0,6)
+	add_piece(create_piece(2,0),0,2)
+	add_piece(create_piece(2,0),0,5)
+	add_piece(create_piece(1,0),0,3)
+	add_piece(create_piece(0,0),0,4)
+	for i in range (size):
+		add_piece(create_piece(5,1),6,i)
+	add_piece(create_piece(4,1),7,0)
+	add_piece(create_piece(4,1),7,7)
+	add_piece(create_piece(3,1),7,1)
+	add_piece(create_piece(3,1),7,6)
+	add_piece(create_piece(2,1),7,2)
+	add_piece(create_piece(2,1),7,5)
+	add_piece(create_piece(1,1),7,3)
+	add_piece(create_piece(0,1),7,4)
+
+func test_positions():
 	add_piece(create_piece(2,0),7,5)
 	add_piece(create_piece(4,1),2,5)
 	add_piece(create_piece(1,0),5,2)
@@ -36,7 +61,6 @@ func _ready():
 	add_piece(create_piece(3,1),4,6)
 	add_piece(create_piece(5,1),3,1)
 	add_piece(create_piece(5,0),1,2)
-
 
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
 	add_piece(remove_piece(oldRow,oldCol),newRow, newCol)

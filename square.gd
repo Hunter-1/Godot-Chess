@@ -26,7 +26,7 @@ func initialize(row: int, col: int):
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var sum = boardPosition.x + boardPosition.y
-	if sum % 2 == 1:
+	if sum % 2 == 0:
 		$Polygon2D.color = black_color
 	else:
 		$Polygon2D.color = white_color
