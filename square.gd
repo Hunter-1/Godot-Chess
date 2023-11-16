@@ -4,6 +4,7 @@ signal piece_clicked(boardPosition: Vector2i, piece)
 signal move_piece(boardPosition: Vector2i)
 signal capture_piece(boardPosition: Vector2i)
 signal no_piece(boardPosition: Vector2i)
+signal en_passant(boardPosition: Vector2i)
 
 var boardPosition: Vector2i
 
@@ -17,6 +18,7 @@ var white_color = Color(211 / 255.0, 198 / 255.0, 174 / 255.0, 255 / 255.0)
 var black_color = Color(83 / 255.0, 65 / 255.0, 53 / 255.0, 255 / 255.0)
 
 var is_pickable: bool = false
+var is_en_passant: bool = false
 var is_second_pick: bool = false
 
 func initialize(row: int, col: int):
@@ -53,6 +55,9 @@ func remove_piece():
 func set_is_second_pick(boolean: bool):
 	is_second_pick = boolean
 
+func set_is_en_passant(boolean: bool):
+	is_en_passant = boolean
+
 func set_is_pickable(boolean: bool):
 	is_pickable = boolean
 	$Selection_Square.visible = is_pickable
@@ -72,7 +77,10 @@ func _on_input_event(viewport, event, shape_idx):
 		else:
 			if (is_pickable):
 				if (piece == null):
-					emit_signal("move_piece",boardPosition)
+					if (is_en_passant):
+						emit_signal("en_passant",boardPosition)
+					else:
+						emit_signal("move_piece",boardPosition)
 				else:
 					emit_signal("capture_piece",boardPosition)
 			else:
