@@ -15,6 +15,8 @@ var pieceType: int
 var oldPosition: Vector2i
 var newPosition: Vector2i
 
+var castle_count: int
+
 var check: bool
 var checkmate: bool
 
@@ -30,18 +32,23 @@ func print_string():
 			output += "x"
 		output += alphabet[newPosition.x]
 		output += str(newPosition.y + 1)
-		if check:
-			output += "+"
-		if checkmate:
-			output += "#"
+	if moveType == 2:
+		for i in range(castle_count):
+			output += "O-"
+		output = output.left(output.length() - 1)
+	if check:
+		output += "+"
+	if checkmate:
+		output += "#"
 	return output
 
-func create_entry(moveType: int, color:int, pieceType:int, oldPosition: Vector2i, newPosition: Vector2i, check: bool, checkmate: bool):
+func create_entry(moveType: int, color:int, pieceType:int, oldPosition: Vector2i, newPosition: Vector2i, castle_count:int, check: bool, checkmate: bool):
 	self.moveType = moveType
 	self.color = color
 	self.pieceType = pieceType
 	self.oldPosition = oldPosition
 	self.newPosition = newPosition
+	self.castle_count = castle_count
 	self.check = check
 	self.checkmate = checkmate
 

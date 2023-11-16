@@ -5,6 +5,7 @@ signal move_piece(boardPosition: Vector2i)
 signal capture_piece(boardPosition: Vector2i)
 signal no_piece(boardPosition: Vector2i)
 signal en_passant(boardPosition: Vector2i)
+signal castle(boardPosition: Vector2i)
 
 var boardPosition: Vector2i
 
@@ -19,6 +20,7 @@ var black_color = Color(83 / 255.0, 65 / 255.0, 53 / 255.0, 255 / 255.0)
 
 var is_pickable: bool = false
 var is_en_passant: bool = false
+var castle_count: int = 0
 var is_second_pick: bool = false
 
 func initialize(row: int, col: int):
@@ -58,13 +60,12 @@ func set_is_second_pick(boolean: bool):
 func set_is_en_passant(boolean: bool):
 	is_en_passant = boolean
 
+func set_castle_count(number: int):
+	castle_count = number
+
 func set_is_pickable(boolean: bool):
 	is_pickable = boolean
 	$Selection_Square.visible = is_pickable
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
 
 func _on_input_event(viewport, event, shape_idx):
 	if event.is_action_pressed("Click"):
@@ -79,6 +80,8 @@ func _on_input_event(viewport, event, shape_idx):
 				if (piece == null):
 					if (is_en_passant):
 						emit_signal("en_passant",boardPosition)
+					elif (castle_count > 0):
+						emit_signal("castle", boardPosition, castle_count)
 					else:
 						emit_signal("move_piece",boardPosition)
 				else:
