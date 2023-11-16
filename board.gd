@@ -33,6 +33,7 @@ func _ready():
 			square.connect("move_piece", self._on_square_move_piece)
 			square.connect("capture_piece", self._on_square_capture_piece)
 			square.connect("no_piece", self._on_no_piece)
+			square.connect("en_passant", self._on_en_passant)
 			var numMarking = preload("res://markings.tscn").instantiate()
 			numMarking.initialize(j,-1)
 			add_child(numMarking)
@@ -129,6 +130,17 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,false,false)
 	_after_place_piece()
 
+func _on_en_passant(newBoardPosition: Vector2i):
+	var difference = picked_up_boardPosition - newBoardPosition
+	remove_piece(picked_up_boardPosition.y,picked_up_boardPosition.x - difference.x)
+	move_piece(
+	picked_up_boardPosition.y,
+	picked_up_boardPosition.x,
+	newBoardPosition.y,
+	newBoardPosition.x)
+	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,false,false)
+	_after_place_piece()
+
 func _after_place_piece():
 	play_random_sound()
 	picked_up_piece.set_is_picked_up(false)
@@ -137,6 +149,7 @@ func _after_place_piece():
 	picked_up_boardPosition = Vector2i.ZERO
 	get_tree().call_group("squares", "set_is_second_pick",false)
 	get_tree().call_group("squares", "set_is_pickable",false)
+	get_tree().call_group("squares", "set_is_en_passant",false)
 
 func _check_movement_squares(boardPosition: Vector2i, piece):
 	var type = piece.get_pieceType()
@@ -181,20 +194,25 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 						square.set_is_pickable(true)
 				break
 			if type == 5 && i == 3 && piece.get_has_moved() == false:
-				square.set_is_pickable(true)
+				var middlePosition = tempPosition - Vector2i(0,direction)
+				if Squares[middlePosition.y][middlePosition.x].get_piece() == null:
+					square.set_is_pickable(true)
 			if type != 5 || i == 0:
 				square.set_is_pickable(true)
+			if type == 5 && i == 1 || i == 2 :
+				if $Log.get_has_entry():
+					var log_entry = $Log.latest_log()
+					var difference = log_entry.get_oldPosition() - log_entry.get_newPosition()
+					if (log_entry.get_pieceType() == 5 && 
+					abs(difference.y) == 2):
+						var middlePosition = log_entry.get_oldPosition() - Vector2i(0,direction)
+						if middlePosition == tempPosition:
+							square.set_is_pickable(true)
+							square.set_is_en_passant(true)
 			if type == 0 || type == 3 || type == 5:
-				if type == 5:
-					pass
-				if type == 0:
-					pass
 				break
 			tempPosition += vector
-	if type == 0:
-		pass
-		
-		
+
 func play_random_sound():
 	var random_index = randi() % sounds.size()
 	var sound = sounds[random_index]
