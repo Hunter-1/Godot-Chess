@@ -34,6 +34,7 @@ func _ready():
 			square.connect("capture_piece", self._on_square_capture_piece)
 			square.connect("no_piece", self._on_no_piece)
 			square.connect("en_passant", self._on_en_passant)
+			square.connect("castle", self._on_castle)
 			var numMarking = preload("res://markings.tscn").instantiate()
 			numMarking.initialize(j,-1)
 			add_child(numMarking)
@@ -42,7 +43,7 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
-	starting_positions()
+	test_positions()
 
 func starting_positions():
 	for i in range (size):
@@ -70,8 +71,9 @@ func test_positions():
 	add_piece(create_piece(2,0),7,5)
 	add_piece(create_piece(4,1),2,5)
 	add_piece(create_piece(1,0),5,2)
-	add_piece(create_piece(0,1),1,7)
-	add_piece(create_piece(3,1),4,6)
+	add_piece(create_piece(0,0),0,4)
+	add_piece(create_piece(4,0),0,7)
+	add_piece(create_piece(4,0),0,0)
 	add_piece(create_piece(5,1),3,1)
 	add_piece(create_piece(5,0),1,2)
 
@@ -118,7 +120,7 @@ func _on_square_move_piece(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	$Log.append_log(0,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,false,false)
+	$Log.append_log(0,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,0,false,false)
 	_after_place_piece()
 
 func _on_square_capture_piece(newBoardPosition: Vector2i):
@@ -127,7 +129,7 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,false,false)
+	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,0,false,false)
 	_after_place_piece()
 
 func _on_en_passant(newBoardPosition: Vector2i):
@@ -138,7 +140,27 @@ func _on_en_passant(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,false,false)
+	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,0,false,false)
+	_after_place_piece()
+
+func _on_castle(newBoardPosition: Vector2i, castle_count: int):
+	var difference = picked_up_boardPosition - newBoardPosition
+	var direction: int = 0
+	if difference.x > 0:
+		direction = 1
+	else:
+		direction = -1
+	move_piece(
+	picked_up_boardPosition.y,
+	picked_up_boardPosition.x,
+	newBoardPosition.y,
+	newBoardPosition.x)
+	move_piece(
+	picked_up_boardPosition.y,
+	picked_up_boardPosition.x - castle_count * direction - direction,
+	newBoardPosition.y,
+	newBoardPosition.x + direction)
+	$Log.append_log(2,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,castle_count,false,false)
 	_after_place_piece()
 
 func _after_place_piece():
@@ -150,6 +172,7 @@ func _after_place_piece():
 	get_tree().call_group("squares", "set_is_second_pick",false)
 	get_tree().call_group("squares", "set_is_pickable",false)
 	get_tree().call_group("squares", "set_is_en_passant",false)
+	get_tree().call_group("squares", "set_castle_count",0)
 
 func _check_movement_squares(boardPosition: Vector2i, piece):
 	var type = piece.get_pieceType()
@@ -211,6 +234,36 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 							square.set_is_en_passant(true)
 			if type == 0 || type == 3 || type == 5:
 				break
+			tempPosition += vector
+	if type == 0 && !piece.get_has_moved():
+		castle_check(boardPosition, piece)
+
+func castle_check(boardPosition: Vector2i, piece):
+	var vectors = []
+	vectors.append(Vector2i(1,0))
+	vectors.append(Vector2i(-1,0))
+	for i in range(0,vectors.size()):
+		var vector = vectors[i]
+		var castle_count = 0
+		var tempPosition = boardPosition
+		tempPosition += vector
+		while (tempPosition.x <= 7 && 
+		tempPosition.x >= 0 &&
+		tempPosition.y <= 7 && 
+		tempPosition.y >= 0):
+			var square = Squares[tempPosition.y][tempPosition.x]
+			if square.get_piece() != null:
+				if square.get_piece().get_pieceType() != 4:
+					break
+				elif !square.get_piece().get_has_moved():
+					tempPosition = boardPosition
+					tempPosition += vector
+					tempPosition += vector
+					square = Squares[tempPosition.y][tempPosition.x]
+					square.set_is_pickable(true)
+					square.set_castle_count(castle_count)
+					break
+			castle_count += 1
 			tempPosition += vector
 
 func play_random_sound():
