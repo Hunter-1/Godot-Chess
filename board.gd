@@ -43,7 +43,7 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
-	test_positions()
+	starting_positions()
 
 func starting_positions():
 	for i in range (size):

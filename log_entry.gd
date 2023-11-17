@@ -42,7 +42,14 @@ func print_string():
 		output += "#"
 	return output
 
-func create_entry(moveType: int, color:int, pieceType:int, oldPosition: Vector2i, newPosition: Vector2i, castle_count:int, check: bool, checkmate: bool):
+func create_entry(moveType: int,
+	color:int,
+	pieceType:int,
+	oldPosition: Vector2i,
+	newPosition: Vector2i,
+	castle_count:int,
+	check: bool,
+	checkmate: bool):
 	self.moveType = moveType
 	self.color = color
 	self.pieceType = pieceType
