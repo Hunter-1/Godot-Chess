@@ -7,6 +7,7 @@ var capture: bool = false
 
 var pieceColor: int
 var pieceType: int
+var promotionPieceType: int
 
 var oldPosition: Vector2i
 var newPosition: Vector2i
@@ -28,6 +29,9 @@ func print_string():
 			output += "-"
 		output += alphabet[newPosition.x]
 		output += str(newPosition.y + 1)
+		if (promotionPieceType > 0):
+			output += "="
+			output += pieceSymbol[promotionPieceType]
 	else:
 		for i in range(castle_count):
 			output += "O-"
@@ -92,3 +96,9 @@ func get_checkmate():
 
 func set_checkmate(boolean: bool):
 	checkmate = boolean
+
+func get_promotionPieceType():
+	return promotionPieceType
+
+func set_promotionPieceType(number: int):
+	promotionPieceType = number

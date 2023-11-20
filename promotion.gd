@@ -1,6 +1,6 @@
 extends Area2D
 
-signal promotion_piece()
+signal promotion_piece(color,type)
 
 func initialize(color: int):
 	$Queen.initialize(1,color)

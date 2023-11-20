@@ -6,10 +6,13 @@ var Squares = []
 var size: int = 8
 
 var log_entry_load = preload("res://log_entry.tscn")
+var log_entry
 
 var is_piece_picked_up: bool = false
 var picked_up_boardPosition: Vector2i
 var picked_up_piece
+var piece_to_promote_position: Vector2i
+var promotion
 
 var sounds = [
 	preload("res://art/sound1.wav"), 
@@ -45,7 +48,7 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
-	starting_positions()
+	test_positions()
 
 func starting_positions():
 	for i in range (size):
@@ -122,10 +125,11 @@ func _on_square_move_piece(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	var log_entry = log_entry_load.instantiate()
+	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
-	$Log.append_log(log_entry)
-	_after_place_piece()
+	if !_check_if_promotion(newBoardPosition):
+		$Log.append_log(log_entry)
+		_after_place_piece()
 
 func _on_square_capture_piece(newBoardPosition: Vector2i):
 	capture_piece(
@@ -133,11 +137,33 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	var log_entry = log_entry_load.instantiate()
+	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
 	log_entry.set_capture(true)
+	if !_check_if_promotion(newBoardPosition):
+		$Log.append_log(log_entry)
+		_after_place_piece()
+
+func _check_if_promotion(newBoardPosition: Vector2i):
+	var piece = Squares[newBoardPosition.y][newBoardPosition.x].get_piece()
+	if piece.get_pieceType() == 5:
+		if newBoardPosition.y == 7 - 7 * piece.get_pieceColor():
+			promotion = preload("res://promotion.tscn").instantiate()
+			promotion.initialize(piece.get_pieceColor())
+			add_child(promotion)
+			promotion.connect("promotion_piece", self._on_promote)
+			piece_to_promote_position = newBoardPosition
+			_after_place_piece()
+			return true
+	return false
+
+func _on_promote(color, type):
+	remove_piece(piece_to_promote_position.y,piece_to_promote_position.x)
+	add_piece(create_piece(type,color),piece_to_promote_position.y,piece_to_promote_position.x)
+	log_entry.set_promotionPieceType(type)
 	$Log.append_log(log_entry)
-	_after_place_piece()
+	remove_child(promotion)
+	
 
 func _on_en_passant(newBoardPosition: Vector2i):
 	var difference = picked_up_boardPosition - newBoardPosition
@@ -147,7 +173,7 @@ func _on_en_passant(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	var log_entry = log_entry_load.instantiate()
+	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
 	log_entry.set_capture(true)
 	$Log.append_log(log_entry)
@@ -170,7 +196,7 @@ func _on_castle(newBoardPosition: Vector2i, castle_count: int):
 	picked_up_boardPosition.x - castle_count * direction - direction,
 	newBoardPosition.y,
 	newBoardPosition.x + direction)
-	var log_entry = log_entry_load.instantiate()
+	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
 	log_entry.set_castle_count(castle_count)
 	$Log.append_log(log_entry)
