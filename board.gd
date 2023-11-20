@@ -5,6 +5,8 @@ var numMarkings = []
 var Squares = []
 var size: int = 8
 
+var log_entry_load = preload("res://log_entry.tscn")
+
 var is_piece_picked_up: bool = false
 var picked_up_boardPosition: Vector2i
 var picked_up_piece
@@ -120,7 +122,9 @@ func _on_square_move_piece(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	$Log.append_log(0,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,0,false,false)
+	var log_entry = log_entry_load.instantiate()
+	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	$Log.append_log(log_entry)
 	_after_place_piece()
 
 func _on_square_capture_piece(newBoardPosition: Vector2i):
@@ -129,7 +133,10 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,0,false,false)
+	var log_entry = log_entry_load.instantiate()
+	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	log_entry.set_capture(true)
+	$Log.append_log(log_entry)
 	_after_place_piece()
 
 func _on_en_passant(newBoardPosition: Vector2i):
@@ -140,7 +147,10 @@ func _on_en_passant(newBoardPosition: Vector2i):
 	picked_up_boardPosition.x,
 	newBoardPosition.y,
 	newBoardPosition.x)
-	$Log.append_log(1,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,0,false,false)
+	var log_entry = log_entry_load.instantiate()
+	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	log_entry.set_capture(true)
+	$Log.append_log(log_entry)
 	_after_place_piece()
 
 func _on_castle(newBoardPosition: Vector2i, castle_count: int):
@@ -160,7 +170,10 @@ func _on_castle(newBoardPosition: Vector2i, castle_count: int):
 	picked_up_boardPosition.x - castle_count * direction - direction,
 	newBoardPosition.y,
 	newBoardPosition.x + direction)
-	$Log.append_log(2,picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition,castle_count,false,false)
+	var log_entry = log_entry_load.instantiate()
+	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	log_entry.set_castle_count(castle_count)
+	$Log.append_log(log_entry)
 	_after_place_piece()
 
 func _after_place_piece():
@@ -173,6 +186,8 @@ func _after_place_piece():
 	get_tree().call_group("squares", "set_is_pickable",false)
 	get_tree().call_group("squares", "set_is_en_passant",false)
 	get_tree().call_group("squares", "set_castle_count",0)
+	
+
 
 func _check_movement_squares(boardPosition: Vector2i, piece):
 	var type = piece.get_pieceType()

@@ -1,38 +1,34 @@
 extends Node
 
-# 0 Move
-# 1 Capture
-# 2 Castle
-
 var pieceSymbol = ["K","Q","B","N","R",""]
 var alphabet = ["a", "b", "c", "d", "e", "f", "g", "h"]
 
-var moveType: int
+var capture: bool = false
 
-var color: int
+var pieceColor: int
 var pieceType: int
 
 var oldPosition: Vector2i
 var newPosition: Vector2i
 
-var castle_count: int
+var castle_count: int = 0
 
-var check: bool
-var checkmate: bool
+var check: bool = false
+var checkmate: bool = false
 
 func print_string():
 	var output = ""
-	if moveType == 0 || moveType == 1:
+	if castle_count == 0:
 		output += pieceSymbol[pieceType]
 		output += alphabet[oldPosition.x]
 		output += str(oldPosition.y + 1)
-		if moveType == 0:
-			output += "-"
-		elif moveType == 1:
+		if capture:
 			output += "x"
+		else:
+			output += "-"
 		output += alphabet[newPosition.x]
 		output += str(newPosition.y + 1)
-	if moveType == 2:
+	else:
 		for i in range(castle_count):
 			output += "O-"
 		output = output.left(output.length() - 1)
@@ -42,40 +38,57 @@ func print_string():
 		output += "#"
 	return output
 
-func create_entry(moveType: int,
-	color:int,
-	pieceType:int,
-	oldPosition: Vector2i,
-	newPosition: Vector2i,
-	castle_count:int,
-	check: bool,
-	checkmate: bool):
-	self.moveType = moveType
-	self.color = color
-	self.pieceType = pieceType
-	self.oldPosition = oldPosition
-	self.newPosition = newPosition
-	self.castle_count = castle_count
-	self.check = check
-	self.checkmate = checkmate
+func create_entry(color:int,type:int,old:Vector2i,new:Vector2i):
+	pieceColor = color
+	pieceType = type
+	oldPosition = old
+	newPosition = new
+	
 
-func get_moveType(): 
-	return moveType
+func get_capture(): 
+	return capture
 
-func get_color():
-	return color
+func set_capture(boolean:bool):
+	capture = boolean
+
+func get_colorType():
+	return pieceColor
+
+func set_colorType(number:int):
+	pieceColor = number
 
 func get_pieceType():
 	return pieceType
 
+func set_pieceType(number:int):
+	pieceType = number
+
 func get_oldPosition():
 	return oldPosition
+
+func set_oldPosition(position: Vector2i):
+	oldPosition = position
 
 func get_newPosition():
 	return newPosition
 
+func set_newPosition(position: Vector2i):
+	newPosition = position
+
+func get_castle_count():
+	return castle_count
+
+func set_castle_count(number:int):
+	castle_count = number
+
 func get_check():
 	return check
 
+func set_check(boolean: bool):
+	check = boolean
+
 func get_checkmate():
 	return checkmate
+
+func set_checkmate(boolean: bool):
+	checkmate = boolean

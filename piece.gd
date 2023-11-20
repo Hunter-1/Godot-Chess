@@ -1,5 +1,7 @@
 extends Area2D
 
+signal piece_clicked(pieceColor: int, pieceType: int)
+
 #	PieceType Codes
 #	0 King
 #	1 Queen
@@ -56,3 +58,7 @@ func get_has_moved():
 
 func set_has_moved(boolean: bool):
 	has_moved = boolean
+
+func _on_input_event(viewport, event, shape_idx):
+	if event.is_action_pressed("Click"):
+		emit_signal("piece_clicked",pieceColor,pieceType)
