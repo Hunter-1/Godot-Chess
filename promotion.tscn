@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://xcggp6ugt7md"]
+
+[ext_resource type="Script" path="res://promotion.gd" id="1_yw2st"]
+[ext_resource type="PackedScene" uid="uid://bt7iby583yijx" path="res://piece.tscn" id="2_rqy82"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bhffb"]
+size = Vector2(400, 100)
+
+[node name="Promotion" type="Area2D"]
+script = ExtResource("1_yw2st")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+color = Color(0.101961, 0.101961, 0.101961, 0.584314)
+polygon = PackedVector2Array(0, 0, 400, 0, 400, 100, 0, 100)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(200, 50)
+shape = SubResource("RectangleShape2D_bhffb")
+
+[node name="Queen" parent="." instance=ExtResource("2_rqy82")]
+
+[node name="Rook" parent="." instance=ExtResource("2_rqy82")]
+position = Vector2(100, 0)
+
+[node name="Bishop" parent="." instance=ExtResource("2_rqy82")]
+position = Vector2(200, 0)
+
+[node name="Knight" parent="." instance=ExtResource("2_rqy82")]
+position = Vector2(300, 0)
