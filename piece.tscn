@@ -98,7 +98,7 @@ animations = [{
 "speed": 0.0
 }]
 
-[node name="Piece" type="Area2D"]
+[node name="Piece" type="Area2D" groups=["pieces"]]
 z_index = 1
 script = ExtResource("1_ole5j")
 
