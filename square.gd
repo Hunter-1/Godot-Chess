@@ -23,6 +23,8 @@ var is_en_passant: bool = false
 var castle_count: int = 0
 var is_second_pick: bool = false
 
+var active: bool = true
+
 func initialize(row: int, col: int):
 	boardPosition = Vector2i(col,row)
 	position = _get_squarePosition()
@@ -67,8 +69,11 @@ func set_is_pickable(boolean: bool):
 	is_pickable = boolean
 	$Selection_Square.visible = is_pickable
 
+func set_active(boolean: bool):
+	active = boolean
+
 func _on_input_event(viewport, event, shape_idx):
-	if event.is_action_pressed("Click"):
+	if event.is_action_pressed("Click") && active:
 		if !is_second_pick:
 			if piece != null:
 				piece.set_is_picked_up(true)

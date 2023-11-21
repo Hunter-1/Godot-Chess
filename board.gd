@@ -153,6 +153,7 @@ func _check_if_promotion(newBoardPosition: Vector2i):
 			add_child(promotion)
 			promotion.connect("promotion_piece", self._on_promote)
 			piece_to_promote_position = newBoardPosition
+			get_tree().call_group("squares", "set_active",false)
 			_after_place_piece()
 			return true
 	return false
@@ -163,6 +164,7 @@ func _on_promote(color, type):
 	log_entry.set_promotionPieceType(type)
 	$Log.append_log(log_entry)
 	remove_child(promotion)
+	get_tree().call_group("squares", "set_active",true)
 	
 
 func _on_en_passant(newBoardPosition: Vector2i):
