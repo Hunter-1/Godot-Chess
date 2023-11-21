@@ -74,6 +74,28 @@ func set_threatened_squares():
 						squareTemp.set_threatened_by_white(true)
 					elif (color == 1):
 						squareTemp.set_threatened_by_black(true)
+			if piece.get_pieceType() == 5:
+				var direction = piece.get_pieceColor() * -2 + 1
+				var tempPosition = boardPosition + Vector2i(1,direction)
+				if (tempPosition.x <= 7 && 
+				tempPosition.x >= 0 &&
+				tempPosition.y <= 7 && 
+				tempPosition.y >= 0):
+					var squareTemp = Squares[tempPosition.y][tempPosition.x]
+					if (color == 0):
+						squareTemp.set_threatened_by_white(true)
+					elif (color == 1):
+						squareTemp.set_threatened_by_black(true)
+				tempPosition = boardPosition + Vector2i(-1,direction)
+				if (tempPosition.x <= 7 && 
+				tempPosition.x >= 0 &&
+				tempPosition.y <= 7 && 
+				tempPosition.y >= 0):
+					var squareTemp = Squares[tempPosition.y][tempPosition.x]
+					if (color == 0):
+						squareTemp.set_threatened_by_white(true)
+					elif (color == 1):
+						squareTemp.set_threatened_by_black(true)
 
 func starting_positions():
 	for i in range (size):
@@ -147,7 +169,6 @@ func _on_piece_clicked(boardPosition: Vector2i, piece):
 
 func _on_no_piece(boardPosition: Vector2i):
 	if picked_up_boardPosition == boardPosition:
-		print(picked_up_piece.get_legal_moves())
 		picked_up_piece.set_is_picked_up(false)
 		is_piece_picked_up = false
 		picked_up_boardPosition = Vector2i.ZERO
@@ -351,7 +372,6 @@ func castle_check(boardPosition: Vector2i, piece):
 			var square = Squares[tempPosition.y][tempPosition.x]
 			if square.get_piece() != null:
 				if square.get_piece().get_pieceType() != 4:
-					print("test")
 					break
 				elif !square.get_piece().get_has_moved():
 					tempPosition = boardPosition
