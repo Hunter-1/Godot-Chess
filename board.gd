@@ -1,7 +1,5 @@
 extends Area2D
 
-var letMarking = []
-var numMarkings = []
 var Squares = []
 var size: int = 8
 
@@ -48,8 +46,9 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
-	test_positions()
-	run_movement_check()
+	starting_positions()
+	reset_moves()
+	reset_moves()
 
 func run_movement_check():
 	for i in range(size):
@@ -57,6 +56,24 @@ func run_movement_check():
 			var square = Squares[i][j]
 			if square.get_piece() != null:
 				_check_movement_squares(square.get_boardPosition(),square.get_piece())
+
+
+func set_threatened_squares():
+	get_tree().call_group("squares", "set_threatened_by_white",false)
+	get_tree().call_group("squares", "set_threatened_by_black",false)
+	var squares = get_tree().get_nodes_in_group("squares")
+	for square in squares:
+		if square.get_piece() != null:
+			var piece = square.get_piece()
+			var color = piece.get_pieceColor()
+			var boardPosition = square.get_boardPosition()
+			for position in piece.get_legal_moves():
+				if (piece.get_pieceType() != 5 || boardPosition.x != position.x):
+					var squareTemp = Squares[position.y][position.x]
+					if (color == 0):
+						squareTemp.set_threatened_by_white(true)
+					elif (color == 1):
+						squareTemp.set_threatened_by_black(true)
 
 func starting_positions():
 	for i in range (size):
@@ -125,12 +142,12 @@ func _on_piece_clicked(boardPosition: Vector2i, piece):
 		if en_passant_moves.has(square):
 			Squares[square.y][square.x].set_is_en_passant(true)
 		if castle_moves.has(square):
-			print(castle_moves)
 			Squares[square.y][square.x].set_castle_count(castle_moves[square])
-	#_check_movement_squares(boardPosition,piece)
+
 
 func _on_no_piece(boardPosition: Vector2i):
 	if picked_up_boardPosition == boardPosition:
+		print(picked_up_piece.get_legal_moves())
 		picked_up_piece.set_is_picked_up(false)
 		is_piece_picked_up = false
 		picked_up_boardPosition = Vector2i.ZERO
@@ -232,6 +249,7 @@ func _after_place_piece():
 	is_piece_picked_up = false
 	picked_up_boardPosition = Vector2i.ZERO
 	reset_moves()
+	reset_moves()
 	picked_up_piece = null
 	get_tree().call_group("squares", "set_is_second_pick",false)
 	get_tree().call_group("squares", "set_is_pickable",false)
@@ -249,6 +267,7 @@ func reset_moves():
 		picked_up_piece.empty_en_passant_moves()
 		picked_up_piece.empty_castle_moves()
 	run_movement_check()
+	set_threatened_squares()
 
 func _check_movement_squares(boardPosition: Vector2i, piece):
 	var type = piece.get_pieceType()
@@ -297,6 +316,8 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 				if Squares[middlePosition.y][middlePosition.x].get_piece() == null:
 					piece.add_legal_move(tempPosition)
 			if type != 5 || i == 0:
+				if type == 0 && square.get_threatened_by_opposite(piece.get_pieceColor()):
+					break
 				piece.add_legal_move(tempPosition)
 			if type == 5 && i == 1 || i == 2 :
 				if $Log.get_has_entry():
@@ -330,6 +351,7 @@ func castle_check(boardPosition: Vector2i, piece):
 			var square = Squares[tempPosition.y][tempPosition.x]
 			if square.get_piece() != null:
 				if square.get_piece().get_pieceType() != 4:
+					print("test")
 					break
 				elif !square.get_piece().get_has_moved():
 					tempPosition = boardPosition
@@ -339,6 +361,8 @@ func castle_check(boardPosition: Vector2i, piece):
 					piece.add_legal_move(tempPosition)
 					piece.add_castle_move(tempPosition,castle_count)
 					break
+			if square.get_threatened_by_opposite(piece.get_pieceColor()) && castle_count < 2:
+				break
 			castle_count += 1
 			tempPosition += vector
 

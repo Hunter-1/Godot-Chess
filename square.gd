@@ -23,6 +23,9 @@ var is_en_passant: bool = false
 var castle_count: int = 0
 var is_second_pick: bool = false
 
+var threatened_by_white: bool = false
+var threatened_by_black: bool = false
+
 var active: bool = true
 
 func initialize(row: int, col: int):
@@ -72,6 +75,25 @@ func set_is_pickable(boolean: bool):
 func set_active(boolean: bool):
 	active = boolean
 
+func set_threatened_by_white(boolean:bool):
+	threatened_by_white = boolean
+
+func set_threatened_by_black(boolean:bool):
+	threatened_by_black = boolean
+
+func get_threatened_by_white():
+	return threatened_by_white
+
+func get_threatened_by_black():
+	return threatened_by_black
+
+func get_threatened_by_opposite(color: int):
+	if color == 0:
+		return threatened_by_black
+	elif color == 1:
+		return threatened_by_white
+	return false
+
 func _on_input_event(viewport, event, shape_idx):
 	if event.is_action_pressed("Click") && active:
 		if !is_second_pick:
@@ -80,6 +102,8 @@ func _on_input_event(viewport, event, shape_idx):
 				emit_signal("piece_clicked",boardPosition,piece)
 			else:
 				print(boardPosition)
+				print("white threat:" + str(threatened_by_white))
+				print("black threat:" + str(threatened_by_black))
 		else:
 			if (is_pickable):
 				if (piece == null):
