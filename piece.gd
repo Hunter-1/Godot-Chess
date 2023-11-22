@@ -47,7 +47,7 @@ func empty_legal_moves():
 	legal_moves.clear()
 
 func remove_legal_move(move):
-	legal_moves.remove(move)
+	legal_moves.erase(move)
 
 func get_legal_moves():
 	return legal_moves

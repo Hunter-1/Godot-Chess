@@ -52,7 +52,7 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
-	test_positions()
+	starting_positions()
 	reset_moves()
 	reset_moves()
 
@@ -319,6 +319,7 @@ func _after_place_piece(color):
 	$Log.append_log(log_entry)
 	reset_moves()
 	remove_illegal_moves()
+	
 
 func remove_illegal_moves():
 	for i in range(size):
@@ -334,7 +335,6 @@ func remove_illegal_moves():
 					$BoardState_Tester.set_squares(tempSquares)
 					if $BoardState_Tester.move_piece(BoardPosition.y,BoardPosition.x,move.y,move.x):
 						piece.remove_legal_move(move)
-						pass
 
 func increment_turn_count():
 	turn_count += 1
