@@ -11,8 +11,6 @@ func append_log(log_entry):
 	has_entry = true
 	emit_signal("updated",log_entry.print_string())
 	display_entries.append(log_entry.print_string())
-	
-	print(log_entry.print_string())
 
 func latest_log():
 	if (log_entries.size() > 0):

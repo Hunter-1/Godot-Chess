@@ -27,6 +27,7 @@ var threatened_by_white: bool = false
 var threatened_by_black: bool = false
 
 var active: bool = true
+var turn_count: int = 0
 
 func initialize(row: int, col: int):
 	boardPosition = Vector2i(col,row)
@@ -81,6 +82,9 @@ func set_threatened_by_white(boolean:bool):
 func set_threatened_by_black(boolean:bool):
 	threatened_by_black = boolean
 
+func increment_turn_count():
+	turn_count += 1
+
 func get_threatened_by_white():
 	return threatened_by_white
 
@@ -98,10 +102,11 @@ func _on_input_event(viewport, event, shape_idx):
 	if event.is_action_pressed("Click") && active:
 		if !is_second_pick:
 			if piece != null:
-				piece.set_is_picked_up(true)
-				emit_signal("piece_clicked",boardPosition,piece)
+				if turn_count % 2 == piece.get_pieceColor():
+					piece.set_is_picked_up(true)
+					emit_signal("piece_clicked",boardPosition,piece)
 			else:
-				print(boardPosition)
+				pass
 		else:
 			if (is_pickable):
 				if (piece == null):
