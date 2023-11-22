@@ -23,7 +23,7 @@ var sounds = [
 	preload("res://art/sound3.wav"), 
 	preload("res://art/sound4.wav")
 	]
-	
+		
 var pick_sounds = [ 
 	preload("res://art/sound6.wav"), 
 	preload("res://art/sound7.wav"), 
@@ -136,7 +136,10 @@ func test_positions():
 	add_piece(create_piece(0,1),6,5)
 
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
-	add_piece(remove_piece(oldRow,oldCol),newRow, newCol)
+	if Squares[newRow][newCol].get_piece() != null:
+		capture_piece(oldRow,oldCol,newRow,newCol)
+	else:
+		add_piece(remove_piece(oldRow,oldCol),newRow, newCol)
 
 func get_piece(row: int, col: int):
 	return Squares[row][col].get_piece()
@@ -191,8 +194,13 @@ func _on_square_move_piece(newBoardPosition: Vector2i):
 	newBoardPosition.x)
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	var color = picked_up_piece.get_pieceColor()
 	if !_check_if_promotion(newBoardPosition):
 		_after_place_piece()
+		if (color == 0):
+			log_entry.set_check(black_in_check)
+		elif (color == 1):
+			log_entry.set_check(white_in_check)
 		$Log.append_log(log_entry)
 		
 
@@ -205,8 +213,13 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
 	log_entry.set_capture(true)
+	var color = picked_up_piece.get_pieceColor()
 	if !_check_if_promotion(newBoardPosition):
 		_after_place_piece()
+		if (color == 0):
+			log_entry.set_check(black_in_check)
+		elif (color == 1):
+			log_entry.set_check(white_in_check)
 		$Log.append_log(log_entry)
 		
 
@@ -229,6 +242,10 @@ func _on_promote(color, type):
 	add_piece(create_piece(type,color),piece_to_promote_position.y,piece_to_promote_position.x)
 	_after_place_piece()
 	log_entry.set_promotionPieceType(type)
+	if (color == 0):
+		log_entry.set_check(black_in_check)
+	elif (color == 1):
+		log_entry.set_check(white_in_check)
 	$Log.append_log(log_entry)
 	remove_child(promotion)
 	get_tree().call_group("squares", "set_active",true)
@@ -244,7 +261,12 @@ func _on_en_passant(newBoardPosition: Vector2i):
 	newBoardPosition.x)
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	var color = picked_up_piece.get_pieceColor()
 	_after_place_piece()
+	if (color == 0):
+		log_entry.set_check(black_in_check)
+	elif (color == 1):
+		log_entry.set_check(white_in_check)
 	log_entry.set_capture(true)
 	$Log.append_log(log_entry)
 	
@@ -268,7 +290,12 @@ func _on_castle(newBoardPosition: Vector2i, castle_count: int):
 	newBoardPosition.x + direction)
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	var color = picked_up_piece.get_pieceColor()
 	_after_place_piece()
+	if (color == 0):
+		log_entry.set_check(black_in_check)
+	elif (color == 1):
+		log_entry.set_check(white_in_check)
 	log_entry.set_castle_count(castle_count)
 	$Log.append_log(log_entry)
 	
@@ -283,6 +310,8 @@ func _after_place_piece():
 	reset_moves()
 	reset_moves()
 	picked_up_piece = null
+	black_in_check = false
+	white_in_check = false
 	increment_turn_count()
 	get_tree().call_group("squares", "set_is_second_pick",false)
 	get_tree().call_group("squares", "set_is_pickable",false)
