@@ -56,6 +56,34 @@ func _ready():
 	reset_moves()
 	reset_moves()
 
+func restart_game():
+	if promotion != null:
+		promotion.queue_free()
+	is_piece_picked_up = false
+	picked_up_boardPosition = Vector2i.ZERO
+	picked_up_piece = null
+	piece_to_promote_position = Vector2i.ZERO
+	white_in_check = false
+	black_in_check = false
+	$Log.reset_log()
+	for i in range(size):
+		for j in range(size):
+			var square = Squares[i][j]
+			square.set_turn_count(0)
+			square.set_active(true)
+			if square.get_piece() != null:
+				var piece = square.get_piece()
+				square.set_piece(null)
+				piece.queue_free()
+	starting_positions()
+	turn_count = 0
+	get_tree().call_group("squares", "set_is_second_pick",false)
+	get_tree().call_group("squares", "set_is_pickable",false)
+	get_tree().call_group("squares", "set_is_en_passant",false)
+	get_tree().call_group("squares", "set_castle_count",0)
+	reset_moves()
+	reset_moves()
+
 func run_movement_check():
 	for i in range(size):
 		for j in range(size):
@@ -181,6 +209,8 @@ func _on_piece_clicked(boardPosition: Vector2i, piece):
 func _on_no_piece(boardPosition: Vector2i):
 	if picked_up_boardPosition == boardPosition:
 		picked_up_piece.set_is_picked_up(false)
+		print("Legal: " + str(picked_up_piece.get_legal_moves()))
+		print("Illegal: " + str(picked_up_piece.get_illegal_moves()))
 		is_piece_picked_up = false
 		picked_up_boardPosition = Vector2i.ZERO
 		get_tree().call_group("squares", "set_is_second_pick",false)
@@ -212,7 +242,6 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	var color = picked_up_piece.get_pieceColor()
 	if !_check_if_promotion(newBoardPosition):
 		_after_place_piece(color)
-		
 		
 
 func _check_if_promotion(newBoardPosition: Vector2i):
@@ -255,12 +284,9 @@ func _on_en_passant(newBoardPosition: Vector2i):
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
 	var color = picked_up_piece.get_pieceColor()
-	_after_place_piece(color)
-	if (color == 0):
-		log_entry.set_check(black_in_check)
-	elif (color == 1):
-		log_entry.set_check(white_in_check)
 	log_entry.set_capture(true)
+	_after_place_piece(color)
+	
 
 	
 
@@ -283,14 +309,9 @@ func _on_castle(newBoardPosition: Vector2i, castle_count: int):
 	newBoardPosition.x + direction)
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	log_entry.set_castle_count(castle_count)
 	var color = picked_up_piece.get_pieceColor()
 	_after_place_piece(color)
-	if (color == 0):
-		log_entry.set_check(black_in_check)
-	elif (color == 1):
-		log_entry.set_check(white_in_check)
-	log_entry.set_castle_count(castle_count)
-
 	
 
 func _after_place_piece(color):
@@ -358,6 +379,9 @@ func calculate_illegal_moves():
 				for move in temp_legal_moves:
 					tempSquares = Squares.duplicate(true)
 					$BoardState_Tester.set_squares(tempSquares)
+					$BoardState_Tester.set_has_entry($Log.get_has_entry())
+					if $Log.get_has_entry():
+						$BoardState_Tester.set_latest_entry($Log.latest_log())
 					var check = $BoardState_Tester.move_piece(BoardPosition.y,BoardPosition.x,move.y,move.x)
 					if check:
 						piece.add_illegal_move(move)

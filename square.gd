@@ -85,6 +85,9 @@ func set_threatened_by_black(boolean:bool):
 func increment_turn_count():
 	turn_count += 1
 
+func set_turn_count(number: int):
+	turn_count = number
+
 func get_threatened_by_white():
 	return threatened_by_white
 
