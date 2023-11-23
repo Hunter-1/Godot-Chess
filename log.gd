@@ -1,6 +1,7 @@
 extends Node
 
 signal updated(text)
+signal reset
 
 var log_entries = []
 var display_entries = []
@@ -16,6 +17,12 @@ func latest_log():
 	if (log_entries.size() > 0):
 		return log_entries[log_entries.size()-1]
 	return null
+
+func reset_log():
+	log_entries = []
+	display_entries = []
+	has_entry = false
+	emit_signal("reset")
 
 func get_has_entry():
 	return has_entry

@@ -17,3 +17,12 @@ func _on_log_updated(text):
 	elif entry_count % 2 == 1:
 		hbox.add_child(label)
 		entry_count += 1
+
+func reset_log():
+	entry_count = 0
+	hbox.queue_free()
+	hbox = HBoxContainer.new()
+	for n in $VBoxContainer.get_children():
+		self.remove_child(n)
+		n.queue_free() 
+	
