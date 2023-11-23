@@ -52,7 +52,7 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
-	starting_positions()
+	test_positions()
 	reset_moves()
 	reset_moves()
 
@@ -148,7 +148,7 @@ func get_piece(row: int, col: int):
 func remove_piece(row: int, col: int):
 	return Squares[row][col].remove_piece()
 
-func add_piece(piece ,row: int, col: int):
+func add_piece(piece ,row: int, col : int):
 	Squares[row][col].set_piece(piece)
 
 func create_piece(type: int, color: int):
@@ -295,6 +295,7 @@ func _on_castle(newBoardPosition: Vector2i, castle_count: int):
 	
 
 func _after_place_piece(color):
+	var start_time = Time.get_ticks_msec()
 	play_random_sound()
 	if picked_up_piece != null:
 		picked_up_piece.set_is_picked_up(false)
@@ -303,6 +304,7 @@ func _after_place_piece(color):
 	picked_up_boardPosition = Vector2i.ZERO
 	reset_moves()
 	reset_moves()
+	get_tree().call_group("pieces", "empty_illegal_moves")
 	picked_up_piece = null
 	black_in_check = false
 	white_in_check = false
@@ -318,10 +320,23 @@ func _after_place_piece(color):
 		log_entry.set_check(white_in_check)
 	$Log.append_log(log_entry)
 	reset_moves()
-	remove_illegal_moves()
-	
+	get_tree().call_group("pieces", "empty_illegal_moves")
+	#calculate_illegal_moves()
+	reset_moves()
+	for i in range(size):
+		for j in range(size):
+			if Squares[i][j].get_piece() != null:
+				var piece = Squares[i][j].get_piece()
+				var illegal_moves = piece.get_illegal_moves()
+				for move in illegal_moves:
+					piece.remove_legal_move(move)
+	var end_time = Time.get_ticks_msec()
+	print(end_time - start_time)
 
-func remove_illegal_moves():
+#TODO: Remove legal moves after every space has been checked
+#Create a list of illegal moves first then remove?
+
+func calculate_illegal_moves():
 	for i in range(size):
 		for j in range(size):
 			var tempSquares = Squares.duplicate(true)
@@ -334,7 +349,8 @@ func remove_illegal_moves():
 					tempSquares = Squares.duplicate(true)
 					$BoardState_Tester.set_squares(tempSquares)
 					if $BoardState_Tester.move_piece(BoardPosition.y,BoardPosition.x,move.y,move.x):
-						piece.remove_legal_move(move)
+						piece.add_illegal_move(move)
+
 
 func increment_turn_count():
 	turn_count += 1
@@ -414,8 +430,6 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 				if Squares[middlePosition.y][middlePosition.x].get_piece() == null:
 					piece.add_legal_move(tempPosition)
 			if type != 5 || i == 0:
-				if type == 0 && square.get_threatened_by_opposite(piece.get_pieceColor()):
-					break
 				piece.add_legal_move(tempPosition)
 			if type == 5 && i == 1 || i == 2 :
 				if $Log.get_has_entry():

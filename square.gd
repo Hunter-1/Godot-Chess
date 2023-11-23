@@ -106,7 +106,8 @@ func _on_input_event(viewport, event, shape_idx):
 					piece.set_is_picked_up(true)
 					emit_signal("piece_clicked",boardPosition,piece)
 			else:
-				pass
+				print(get_threatened_by_white())
+				print(get_threatened_by_black())
 		else:
 			if (is_pickable):
 				if (piece == null):
