@@ -14,14 +14,15 @@ signal piece_clicked(pieceColor: int, pieceType: int)
 #	0 White
 #	1 Black
 
-var pieceType: int
-var pieceColor: int
+var pieceType: int 
+var pieceColor: int 
 
 var has_moved: bool = false
 var is_picked_up: bool = false
 var pickup_offset: int = -50
 
 var legal_moves = []
+var illegal_moves = []
 var en_passant_moves = []
 var castle_moves = {}
 
@@ -41,13 +42,30 @@ func _process(delta):
 		global_position += Vector2(pickup_offset, pickup_offset)
 
 func add_legal_move(move: Vector2i):
-	legal_moves.append(move)
+	if !legal_moves.has(move):
+		legal_moves.append(move)
 
 func empty_legal_moves():
 	legal_moves.clear()
 
+func remove_legal_move(move):
+	legal_moves.erase(move)
+
 func get_legal_moves():
 	return legal_moves
+
+func add_illegal_move(move: Vector2i):
+	if !illegal_moves.has(move):
+		illegal_moves.append(move)
+
+func empty_illegal_moves():
+	illegal_moves.clear()
+
+func remove_illegal_move(move):
+	illegal_moves.erase(move)
+
+func get_illegal_moves():
+	return illegal_moves
 
 func add_en_passant_move(move: Vector2i):
 	en_passant_moves.append(move)

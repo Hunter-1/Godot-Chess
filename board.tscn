@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://k40f6d3qxti2"]
+[gd_scene load_steps=7 format=3 uid="uid://k40f6d3qxti2"]
 
 [ext_resource type="Script" path="res://board.gd" id="1_ow5m6"]
 [ext_resource type="PackedScene" uid="uid://b6moggik1538x" path="res://log.tscn" id="2_pnejd"]
 [ext_resource type="Script" path="res://Log_display.gd" id="3_v1peh"]
+[ext_resource type="Script" path="res://BoardState_Tester.gd" id="4_c66c3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yjeof"]
 size = Vector2(896, 896)
@@ -53,5 +54,8 @@ script = ExtResource("3_v1peh")
 layout_mode = 2
 
 [node name="Place_Soundeffect" type="AudioStreamPlayer" parent="."]
+
+[node name="BoardState_Tester" type="Node" parent="."]
+script = ExtResource("4_c66c3")
 
 [connection signal="updated" from="Log" to="Log/Log_display" method="_on_log_updated"]

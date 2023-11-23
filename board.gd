@@ -23,7 +23,7 @@ var sounds = [
 	preload("res://art/sound3.wav"), 
 	preload("res://art/sound4.wav")
 	]
-	
+		
 var pick_sounds = [ 
 	preload("res://art/sound6.wav"), 
 	preload("res://art/sound7.wav"), 
@@ -35,6 +35,7 @@ func _ready():
 		for j in range(size):
 			var square = preload("res://square.tscn").instantiate()
 			square.initialize(i,j)
+			square.add_to_group("squares")
 			add_child(square)
 			row.append(square)
 			square.connect("piece_clicked",self._on_piece_clicked)
@@ -51,7 +52,7 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
-	test_positions()
+	starting_positions()
 	reset_moves()
 	reset_moves()
 
@@ -136,7 +137,10 @@ func test_positions():
 	add_piece(create_piece(0,1),6,5)
 
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
-	add_piece(remove_piece(oldRow,oldCol),newRow, newCol)
+	if Squares[newRow][newCol].get_piece() != null:
+		capture_piece(oldRow,oldCol,newRow,newCol)
+	else:
+		add_piece(remove_piece(oldRow,oldCol),newRow, newCol)
 
 func get_piece(row: int, col: int):
 	return Squares[row][col].get_piece()
@@ -144,12 +148,13 @@ func get_piece(row: int, col: int):
 func remove_piece(row: int, col: int):
 	return Squares[row][col].remove_piece()
 
-func add_piece(piece ,row: int, col: int):
+func add_piece(piece ,row: int, col : int):
 	Squares[row][col].set_piece(piece)
 
 func create_piece(type: int, color: int):
 	var piece = preload("res://piece.tscn").instantiate()
 	piece.initialize(type,color)
+	add_to_group("pieces")
 	return piece
 
 func capture_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
@@ -191,10 +196,9 @@ func _on_square_move_piece(newBoardPosition: Vector2i):
 	newBoardPosition.x)
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
+	var color = picked_up_piece.get_pieceColor()
 	if !_check_if_promotion(newBoardPosition):
-		_after_place_piece()
-		$Log.append_log(log_entry)
-		
+		_after_place_piece(color)
 
 func _on_square_capture_piece(newBoardPosition: Vector2i):
 	capture_piece(
@@ -205,9 +209,10 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
 	log_entry.set_capture(true)
+	var color = picked_up_piece.get_pieceColor()
 	if !_check_if_promotion(newBoardPosition):
-		_after_place_piece()
-		$Log.append_log(log_entry)
+		_after_place_piece(color)
+		
 		
 
 func _check_if_promotion(newBoardPosition: Vector2i):
@@ -220,16 +225,21 @@ func _check_if_promotion(newBoardPosition: Vector2i):
 			promotion.connect("promotion_piece", self._on_promote)
 			piece_to_promote_position = newBoardPosition
 			get_tree().call_group("squares", "set_active",false)
-			_after_place_piece()
+			play_random_sound()
+			if picked_up_piece != null:
+				picked_up_piece.set_is_picked_up(false)
+				picked_up_piece.set_has_moved(true)
+			is_piece_picked_up = false
+			picked_up_boardPosition = Vector2i.ZERO
+			get_tree().call_group("squares", "set_is_pickable",false)
 			return true
 	return false
 
 func _on_promote(color, type):
 	remove_piece(piece_to_promote_position.y,piece_to_promote_position.x)
 	add_piece(create_piece(type,color),piece_to_promote_position.y,piece_to_promote_position.x)
-	_after_place_piece()
 	log_entry.set_promotionPieceType(type)
-	$Log.append_log(log_entry)
+	_after_place_piece(color)
 	remove_child(promotion)
 	get_tree().call_group("squares", "set_active",true)
 	
@@ -244,9 +254,14 @@ func _on_en_passant(newBoardPosition: Vector2i):
 	newBoardPosition.x)
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
-	_after_place_piece()
+	var color = picked_up_piece.get_pieceColor()
+	_after_place_piece(color)
+	if (color == 0):
+		log_entry.set_check(black_in_check)
+	elif (color == 1):
+		log_entry.set_check(white_in_check)
 	log_entry.set_capture(true)
-	$Log.append_log(log_entry)
+
 	
 
 func _on_castle(newBoardPosition: Vector2i, castle_count: int):
@@ -268,12 +283,17 @@ func _on_castle(newBoardPosition: Vector2i, castle_count: int):
 	newBoardPosition.x + direction)
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
-	_after_place_piece()
+	var color = picked_up_piece.get_pieceColor()
+	_after_place_piece(color)
+	if (color == 0):
+		log_entry.set_check(black_in_check)
+	elif (color == 1):
+		log_entry.set_check(white_in_check)
 	log_entry.set_castle_count(castle_count)
-	$Log.append_log(log_entry)
+
 	
 
-func _after_place_piece():
+func _after_place_piece(color):
 	play_random_sound()
 	if picked_up_piece != null:
 		picked_up_piece.set_is_picked_up(false)
@@ -282,17 +302,70 @@ func _after_place_piece():
 	picked_up_boardPosition = Vector2i.ZERO
 	reset_moves()
 	reset_moves()
+	get_tree().call_group("pieces", "empty_illegal_moves")
 	picked_up_piece = null
+	black_in_check = false
+	white_in_check = false
 	increment_turn_count()
 	get_tree().call_group("squares", "set_is_second_pick",false)
 	get_tree().call_group("squares", "set_is_pickable",false)
 	get_tree().call_group("squares", "set_is_en_passant",false)
 	get_tree().call_group("squares", "set_castle_count",0)
-	get_tree().call_group("squares", "increment_turn_count")
 	check_check()
+	if (color == 0):
+		log_entry.set_check(black_in_check)
+	elif (color == 1):
+		log_entry.set_check(white_in_check)
+	$Log.append_log(log_entry)
+	get_tree().call_group("pieces", "empty_illegal_moves")
+	calculate_illegal_moves()
+	for i in range(size):
+		for j in range(size):
+			if Squares[i][j].get_piece() != null:
+				var piece = Squares[i][j].get_piece()
+				var illegal_moves = piece.get_illegal_moves()
+				for move in illegal_moves:
+					piece.remove_legal_move(move)
+	test_check_stale()
+
+func test_check_stale():
+	if !has_legal_moves(turn_count % 2):
+		if get_check(turn_count % 2):
+			print("checkmate")
+		else:
+			print("stalemate")
+
+func has_legal_moves(color:int):
+	var check = false
+	var squares = get_tree().get_nodes_in_group("squares")
+	for square in squares:
+		if square.get_piece() != null:
+			var piece = square.get_piece()
+			if piece.get_pieceColor() == color:
+				var legal_moves = piece.get_legal_moves()
+				if legal_moves.size() > 0:
+					check = true
+	return check
+func calculate_illegal_moves():
+	for i in range(size):
+		for j in range(size):
+			var tempSquares = Squares.duplicate(true)
+			if tempSquares[i][j].get_piece() != null:
+				var BoardPosition = tempSquares[i][j].get_boardPosition()
+				var piece = tempSquares[i][j].get_piece()
+				var legal_moves = piece.get_legal_moves()
+				var temp_legal_moves = legal_moves.duplicate(true)
+				for move in temp_legal_moves:
+					tempSquares = Squares.duplicate(true)
+					$BoardState_Tester.set_squares(tempSquares)
+					var check = $BoardState_Tester.move_piece(BoardPosition.y,BoardPosition.x,move.y,move.x)
+					if check:
+						piece.add_illegal_move(move)
+
 
 func increment_turn_count():
 	turn_count += 1
+	get_tree().call_group("squares", "increment_turn_count")
 
 func check_check():
 	var squares = get_tree().get_nodes_in_group("squares")
@@ -309,6 +382,12 @@ func set_check(color: int, boolean: bool):
 		white_in_check = boolean
 	if color == 1:
 		black_in_check = boolean
+
+func get_check(color: int):
+	if color == 0:
+		return white_in_check
+	if color == 1:
+		return black_in_check
 
 func reset_moves():
 	get_tree().call_group("pieces", "empty_legal_moves")
@@ -368,8 +447,6 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 				if Squares[middlePosition.y][middlePosition.x].get_piece() == null:
 					piece.add_legal_move(tempPosition)
 			if type != 5 || i == 0:
-				if type == 0 && square.get_threatened_by_opposite(piece.get_pieceColor()):
-					break
 				piece.add_legal_move(tempPosition)
 			if type == 5 && i == 1 || i == 2 :
 				if $Log.get_has_entry():
