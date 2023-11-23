@@ -52,7 +52,7 @@ func _ready():
 			add_child(letMarking)
 			
 		Squares.append(row)
-	test_positions()
+	starting_positions()
 	reset_moves()
 	reset_moves()
 
@@ -180,7 +180,6 @@ func _on_piece_clicked(boardPosition: Vector2i, piece):
 
 func _on_no_piece(boardPosition: Vector2i):
 	if picked_up_boardPosition == boardPosition:
-		print(picked_up_piece.get_legal_moves())
 		picked_up_piece.set_is_picked_up(false)
 		is_piece_picked_up = false
 		picked_up_boardPosition = Vector2i.ZERO
@@ -295,7 +294,6 @@ func _on_castle(newBoardPosition: Vector2i, castle_count: int):
 	
 
 func _after_place_piece(color):
-	var start_time = Time.get_ticks_msec()
 	play_random_sound()
 	if picked_up_piece != null:
 		picked_up_piece.set_is_picked_up(false)
@@ -319,10 +317,8 @@ func _after_place_piece(color):
 	elif (color == 1):
 		log_entry.set_check(white_in_check)
 	$Log.append_log(log_entry)
-	reset_moves()
 	get_tree().call_group("pieces", "empty_illegal_moves")
-	#calculate_illegal_moves()
-	reset_moves()
+	calculate_illegal_moves()
 	for i in range(size):
 		for j in range(size):
 			if Squares[i][j].get_piece() != null:
@@ -330,12 +326,26 @@ func _after_place_piece(color):
 				var illegal_moves = piece.get_illegal_moves()
 				for move in illegal_moves:
 					piece.remove_legal_move(move)
-	var end_time = Time.get_ticks_msec()
-	print(end_time - start_time)
+	test_check_stale()
 
-#TODO: Remove legal moves after every space has been checked
-#Create a list of illegal moves first then remove?
+func test_check_stale():
+	if !has_legal_moves(turn_count % 2):
+		if get_check(turn_count % 2):
+			print("checkmate")
+		else:
+			print("stalemate")
 
+func has_legal_moves(color:int):
+	var check = false
+	var squares = get_tree().get_nodes_in_group("squares")
+	for square in squares:
+		if square.get_piece() != null:
+			var piece = square.get_piece()
+			if piece.get_pieceColor() == color:
+				var legal_moves = piece.get_legal_moves()
+				if legal_moves.size() > 0:
+					check = true
+	return check
 func calculate_illegal_moves():
 	for i in range(size):
 		for j in range(size):
@@ -348,7 +358,8 @@ func calculate_illegal_moves():
 				for move in temp_legal_moves:
 					tempSquares = Squares.duplicate(true)
 					$BoardState_Tester.set_squares(tempSquares)
-					if $BoardState_Tester.move_piece(BoardPosition.y,BoardPosition.x,move.y,move.x):
+					var check = $BoardState_Tester.move_piece(BoardPosition.y,BoardPosition.x,move.y,move.x)
+					if check:
 						piece.add_illegal_move(move)
 
 
@@ -371,6 +382,12 @@ func set_check(color: int, boolean: bool):
 		white_in_check = boolean
 	if color == 1:
 		black_in_check = boolean
+
+func get_check(color: int):
+	if color == 0:
+		return white_in_check
+	if color == 1:
+		return black_in_check
 
 func reset_moves():
 	get_tree().call_group("pieces", "empty_legal_moves")

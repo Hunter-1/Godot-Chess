@@ -14,8 +14,8 @@ signal piece_clicked(pieceColor: int, pieceType: int)
 #	0 White
 #	1 Black
 
-var pieceType: int
-var pieceColor: int
+var pieceType: int 
+var pieceColor: int 
 
 var has_moved: bool = false
 var is_picked_up: bool = false

@@ -7,14 +7,12 @@ func set_squares(inputSquares):
 	Squares = inputSquares
 
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
-	print("OLD Location: " + str(Squares[oldRow][oldCol].get_boardPosition()))
-	print("NEW Location: " + str(Squares[newRow][newCol].get_boardPosition()))
 	var color = Squares[oldRow][oldCol].get_piece().get_pieceColor()
 	var captured_piece
 	if Squares[newRow][newCol].get_piece() != null:
 		captured_piece = remove_piece(newRow, newCol)
 	add_piece(remove_piece(oldRow,oldCol),newRow, newCol)
-	
+	reset_moves()
 	var check = check_check(color)
 	add_piece(remove_piece(newRow,newCol),oldRow, oldCol)
 	if captured_piece != null:
@@ -40,8 +38,9 @@ func check_check(color: int):
 			if square.get_piece() != null:
 				var piece = square.get_piece()
 				if piece.get_pieceType() == 0 && piece.get_pieceColor() == color:
-					if square.get_threatened_by_opposite(color):
+					if square.get_threatened_by_opposite(piece.get_pieceColor()):
 						return true
+	return false
 
 func run_movement_check():
 	for i in range(size):
@@ -91,8 +90,7 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 				if square.get_piece().get_pieceColor() != piece.get_pieceColor():
 					if type != 5 || i > 0 && i < 3:
 						piece.add_legal_move(tempPosition)
-				if square.get_piece().get_pieceType() != 0 || square.get_piece().get_pieceColor() == piece.get_pieceColor():
-					break
+				break
 			if type == 5 && i == 3 && piece.get_has_moved() == false:
 				var middlePosition = tempPosition - Vector2i(0,direction)
 				if Squares[middlePosition.y][middlePosition.x].get_piece() == null:
@@ -104,43 +102,17 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 			if type == 0 || type == 3 || type == 5:
 				break
 			tempPosition += vector
-	if type == 0 && !piece.get_has_moved():
-		castle_check(boardPosition, piece)
 
-func castle_check(boardPosition: Vector2i, piece):
-	var vectors = []
-	vectors.append(Vector2i(1,0))
-	vectors.append(Vector2i(-1,0))
-	for i in range(0,vectors.size()):
-		var vector = vectors[i]
-		var castle_count = 0
-		var tempPosition = boardPosition
-		tempPosition += vector
-		while (tempPosition.x <= 7 && 
-		tempPosition.x >= 0 &&
-		tempPosition.y <= 7 && 
-		tempPosition.y >= 0):
-			var square = Squares[tempPosition.y][tempPosition.x]
-			if square.get_piece() != null:
-				if square.get_piece().get_pieceType() != 4:
-					break
-				elif !square.get_piece().get_has_moved():
-					tempPosition = boardPosition
-					tempPosition += vector
-					tempPosition += vector
-					square = Squares[tempPosition.y][tempPosition.x]
-					piece.add_legal_move(tempPosition)
-					piece.add_castle_move(tempPosition,castle_count)
-					break
-			if square.get_threatened_by_opposite(piece.get_pieceColor()) && castle_count < 2:
-				break
-			castle_count += 1
-			tempPosition += vector
 
 func reset_moves():
-	get_tree().call_group("pieces", "empty_legal_moves")
-	get_tree().call_group("pieces", "empty_en_passant_moves")
-	get_tree().call_group("pieces", "empty_castle_moves")
+	for i in range(size):
+		for j in range(size):
+			var square = Squares[i][j]
+			if square.get_piece() != null:
+				var piece = square.get_piece()
+				piece.empty_legal_moves()
+				piece.empty_en_passant_moves()
+				piece.empty_castle_moves()
 	run_movement_check()
 	set_threatened_squares()
 
@@ -150,6 +122,9 @@ func set_threatened_squares():
 			var square = Squares[i][j]
 			square.set_threatened_by_white(false)
 			square.set_threatened_by_black(false)
+	for i in range(size):
+		for j in range(size):
+			var square = Squares[i][j]
 			if square.get_piece() != null:
 				var piece = square.get_piece()
 				var color = piece.get_pieceColor()
