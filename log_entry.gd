@@ -16,6 +16,7 @@ var castle_count: int = 0
 
 var check: bool = false
 var checkmate: bool = false
+var stalemate: bool = false
 
 func print_string():
 	var output = ""
@@ -36,10 +37,12 @@ func print_string():
 		for i in range(castle_count):
 			output += "O-"
 		output = output.left(output.length() - 1)
-	if check:
-		output += "+"
 	if checkmate:
 		output += "#"
+	elif stalemate:
+		output += "$"
+	elif check:
+		output += "+"
 	return output
 
 func create_entry(color:int,type:int,old:Vector2i,new:Vector2i):
@@ -96,6 +99,13 @@ func get_checkmate():
 
 func set_checkmate(boolean: bool):
 	checkmate = boolean
+
+func get_stalemate():
+	return stalemate
+
+func set_stalemate(boolean: bool):
+	stalemate = boolean
+
 
 func get_promotionPieceType():
 	return promotionPieceType

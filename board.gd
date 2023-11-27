@@ -14,6 +14,9 @@ var picked_up_piece
 var piece_to_promote_position: Vector2i
 var promotion
 
+#For Threefold Repetition
+var boardState_list = {}
+
 var white_in_check: bool = false
 var black_in_check: bool = false
 
@@ -209,8 +212,6 @@ func _on_piece_clicked(boardPosition: Vector2i, piece):
 func _on_no_piece(boardPosition: Vector2i):
 	if picked_up_boardPosition == boardPosition:
 		picked_up_piece.set_is_picked_up(false)
-		print("Legal: " + str(picked_up_piece.get_legal_moves()))
-		print("Illegal: " + str(picked_up_piece.get_illegal_moves()))
 		is_piece_picked_up = false
 		picked_up_boardPosition = Vector2i.ZERO
 		get_tree().call_group("squares", "set_is_second_pick",false)
@@ -337,7 +338,6 @@ func _after_place_piece(color):
 		log_entry.set_check(black_in_check)
 	elif (color == 1):
 		log_entry.set_check(white_in_check)
-	$Log.append_log(log_entry)
 	get_tree().call_group("pieces", "empty_illegal_moves")
 	calculate_illegal_moves()
 	for i in range(size):
@@ -347,13 +347,38 @@ func _after_place_piece(color):
 				var illegal_moves = piece.get_illegal_moves()
 				for move in illegal_moves:
 					piece.remove_legal_move(move)
+	threefold_repetition_check()
 	test_check_stale()
+	$Log.append_log(log_entry)
+
+func threefold_repetition_check():
+	var colorSymbol = ["W","B"]
+	var pieceSymbol = ["K","Q","B","N","R","P"]
+	var boardStateString = ""
+	for i in range(size):
+		for j in range(size):
+			var square = Squares[i][j]
+			if square.get_piece() != null:
+				var piece = square.get_piece()
+				boardStateString += colorSymbol[piece.get_pieceColor()]
+				boardStateString += pieceSymbol[piece.get_pieceType()]
+			else:
+				boardStateString += "-"
+	if !boardState_list.has(boardStateString):
+		boardState_list[boardStateString] = 0
+	boardState_list[boardStateString] += 1
+	if boardState_list[boardStateString] == 3:
+		log_entry.set_stalemate(true)
+		print("stalemate")
+	print(boardState_list[boardStateString])
 
 func test_check_stale():
 	if !has_legal_moves(turn_count % 2):
 		if get_check(turn_count % 2):
+			log_entry.set_checkmate(true)
 			print("checkmate")
 		else:
+			log_entry.set_stalemate(true)
 			print("stalemate")
 
 func has_legal_moves(color:int):
