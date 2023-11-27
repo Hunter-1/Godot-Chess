@@ -16,6 +16,8 @@ var promotion
 
 #For Threefold Repetition
 var boardState_list = {}
+#For Fifty Move Limit
+var fiftyMove_count = 0
 
 var white_in_check: bool = false
 var black_in_check: bool = false
@@ -228,6 +230,8 @@ func _on_square_move_piece(newBoardPosition: Vector2i):
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
 	var color = picked_up_piece.get_pieceColor()
+	if picked_up_piece.get_pieceType() == 5:
+		fiftyMove_count = 0
 	if !_check_if_promotion(newBoardPosition):
 		_after_place_piece(color)
 
@@ -240,6 +244,7 @@ func _on_square_capture_piece(newBoardPosition: Vector2i):
 	log_entry = log_entry_load.instantiate()
 	log_entry.create_entry(picked_up_piece.get_pieceColor(),picked_up_piece.get_pieceType(),picked_up_boardPosition,newBoardPosition)
 	log_entry.set_capture(true)
+	fiftyMove_count = 0
 	var color = picked_up_piece.get_pieceColor()
 	if !_check_if_promotion(newBoardPosition):
 		_after_place_piece(color)
@@ -348,8 +353,17 @@ func _after_place_piece(color):
 				for move in illegal_moves:
 					piece.remove_legal_move(move)
 	threefold_repetition_check()
+	fiftymove_limit_check()
 	test_check_stale()
 	$Log.append_log(log_entry)
+
+func fiftymove_limit_check():
+	fiftyMove_count += 1
+	#fiftyMove_count checks for 100 because a full move consists of 2 player moves
+	#and each player move increases this value by 1
+	if fiftyMove_count == 100:
+		log_entry.set_stalemate(true)
+		print("stalemate")
 
 func threefold_repetition_check():
 	var colorSymbol = ["W","B"]
@@ -370,7 +384,6 @@ func threefold_repetition_check():
 	if boardState_list[boardStateString] == 3:
 		log_entry.set_stalemate(true)
 		print("stalemate")
-	print(boardState_list[boardStateString])
 
 func test_check_stale():
 	if !has_legal_moves(turn_count % 2):
