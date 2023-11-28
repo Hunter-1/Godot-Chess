@@ -70,6 +70,7 @@ func restart_game():
 	piece_to_promote_position = Vector2i.ZERO
 	white_in_check = false
 	black_in_check = false
+	$End_Message.set_visible(false)
 	$Log.reset_log()
 	for i in range(size):
 		for j in range(size):
@@ -260,6 +261,7 @@ func _check_if_promotion(newBoardPosition: Vector2i):
 			promotion.connect("promotion_piece", self._on_promote)
 			piece_to_promote_position = newBoardPosition
 			get_tree().call_group("squares", "set_active",false)
+			promotion.position = Vector2(250,400)
 			play_random_sound()
 			if picked_up_piece != null:
 				picked_up_piece.set_is_picked_up(false)
@@ -345,6 +347,8 @@ func _after_place_piece(color):
 		log_entry.set_check(white_in_check)
 	get_tree().call_group("pieces", "empty_illegal_moves")
 	calculate_illegal_moves()
+	$Log.append_log(log_entry)
+	reset_moves()
 	for i in range(size):
 		for j in range(size):
 			if Squares[i][j].get_piece() != null:
@@ -355,7 +359,6 @@ func _after_place_piece(color):
 	threefold_repetition_check()
 	fiftymove_limit_check()
 	test_check_stale()
-	$Log.append_log(log_entry)
 
 func fiftymove_limit_check():
 	fiftyMove_count += 1
@@ -363,7 +366,7 @@ func fiftymove_limit_check():
 	#and each player move increases this value by 1
 	if fiftyMove_count == 100:
 		log_entry.set_stalemate(true)
-		print("stalemate")
+		end_message("Stalemate: Fifty Move Limit")
 
 func threefold_repetition_check():
 	var colorSymbol = ["W","B"]
@@ -383,16 +386,27 @@ func threefold_repetition_check():
 	boardState_list[boardStateString] += 1
 	if boardState_list[boardStateString] == 3:
 		log_entry.set_stalemate(true)
-		print("stalemate")
+		end_message("Stalemate: Threefold Repetition")
 
 func test_check_stale():
 	if !has_legal_moves(turn_count % 2):
 		if get_check(turn_count % 2):
+			var color
+			if turn_count % 2 == 1:
+				color = "White"
+			else:
+				color = "Black"
 			log_entry.set_checkmate(true)
-			print("checkmate")
+			end_message("Checkmate: " + color + " Wins!")
 		else:
 			log_entry.set_stalemate(true)
-			print("stalemate")
+			end_message("Stalemate")
+
+func end_message(message):
+	get_tree().call_group("squares", "set_active",false)
+	$End_Message/Polygon2D/Label.text = message
+	$End_Message.set_visible(true)
+	
 
 func has_legal_moves(color:int):
 	var check = false

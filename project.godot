@@ -21,7 +21,7 @@ gdscript/warnings/unused_parameter=0
 
 [display]
 
-window/size/viewport_width=1200
+window/size/viewport_width=1350
 window/size/viewport_height=900
 window/size/resizable=false
 

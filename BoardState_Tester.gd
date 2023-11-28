@@ -118,6 +118,7 @@ func _check_movement_squares(boardPosition: Vector2i, piece):
 					var difference = log_entry.get_oldPosition() - log_entry.get_newPosition()
 					if (log_entry.get_pieceType() == 5 && 
 					abs(difference.y) == 2):
+
 						var middlePosition = log_entry.get_oldPosition() - Vector2i(0,direction)
 						if middlePosition == tempPosition:
 							piece.add_legal_move(tempPosition)
