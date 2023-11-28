@@ -261,6 +261,7 @@ func _check_if_promotion(newBoardPosition: Vector2i):
 			promotion.connect("promotion_piece", self._on_promote)
 			piece_to_promote_position = newBoardPosition
 			get_tree().call_group("squares", "set_active",false)
+			promotion.position = Vector2(250,400)
 			play_random_sound()
 			if picked_up_piece != null:
 				picked_up_piece.set_is_picked_up(false)
@@ -346,9 +347,6 @@ func _after_place_piece(color):
 		log_entry.set_check(white_in_check)
 	get_tree().call_group("pieces", "empty_illegal_moves")
 	calculate_illegal_moves()
-	threefold_repetition_check()
-	fiftymove_limit_check()
-	test_check_stale()
 	$Log.append_log(log_entry)
 	reset_moves()
 	for i in range(size):
@@ -358,7 +356,9 @@ func _after_place_piece(color):
 				var illegal_moves = piece.get_illegal_moves()
 				for move in illegal_moves:
 					piece.remove_legal_move(move)
-	print($Log.latest_log().print_string())
+	threefold_repetition_check()
+	fiftymove_limit_check()
+	test_check_stale()
 
 func fiftymove_limit_check():
 	fiftyMove_count += 1
