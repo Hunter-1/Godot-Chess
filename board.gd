@@ -346,6 +346,11 @@ func _after_place_piece(color):
 		log_entry.set_check(white_in_check)
 	get_tree().call_group("pieces", "empty_illegal_moves")
 	calculate_illegal_moves()
+	threefold_repetition_check()
+	fiftymove_limit_check()
+	test_check_stale()
+	$Log.append_log(log_entry)
+	reset_moves()
 	for i in range(size):
 		for j in range(size):
 			if Squares[i][j].get_piece() != null:
@@ -353,10 +358,7 @@ func _after_place_piece(color):
 				var illegal_moves = piece.get_illegal_moves()
 				for move in illegal_moves:
 					piece.remove_legal_move(move)
-	threefold_repetition_check()
-	fiftymove_limit_check()
-	test_check_stale()
-	$Log.append_log(log_entry)
+	print($Log.latest_log().print_string())
 
 func fiftymove_limit_check():
 	fiftyMove_count += 1
