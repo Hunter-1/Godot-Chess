@@ -544,31 +544,34 @@ func castle_check(boardPosition: Vector2i, piece):
 	var vectors = []
 	vectors.append(Vector2i(1,0))
 	vectors.append(Vector2i(-1,0))
-	for i in range(0,vectors.size()):
-		var vector = vectors[i]
-		var castle_count = 0
-		var tempPosition = boardPosition
-		tempPosition += vector
-		while (tempPosition.x <= 7 && 
-		tempPosition.x >= 0 &&
-		tempPosition.y <= 7 && 
-		tempPosition.y >= 0):
-			var square = Squares[tempPosition.y][tempPosition.x]
-			if square.get_piece() != null:
-				if square.get_piece().get_pieceType() != 4:
-					break
-				elif !square.get_piece().get_has_moved():
-					tempPosition = boardPosition
-					tempPosition += vector
-					tempPosition += vector
-					square = Squares[tempPosition.y][tempPosition.x]
-					piece.add_legal_move(tempPosition)
-					piece.add_castle_move(tempPosition,castle_count)
-					break
-			if square.get_threatened_by_opposite(piece.get_pieceColor()) && castle_count < 2:
-				break
-			castle_count += 1
+	var initSquare = Squares[boardPosition.y][boardPosition.x]
+	var threatened = initSquare.get_threatened_by_opposite(piece.get_pieceColor())
+	if !threatened:
+		for i in range(0,vectors.size()):
+			var vector = vectors[i]
+			var castle_count = 0
+			var tempPosition = boardPosition
 			tempPosition += vector
+			while (tempPosition.x <= 7 && 
+			tempPosition.x >= 0 &&
+			tempPosition.y <= 7 && 
+			tempPosition.y >= 0):
+				var square = Squares[tempPosition.y][tempPosition.x]
+				if square.get_piece() != null:
+					if square.get_piece().get_pieceType() != 4:
+						break
+					elif !square.get_piece().get_has_moved():
+						tempPosition = boardPosition
+						tempPosition += vector
+						tempPosition += vector
+						square = Squares[tempPosition.y][tempPosition.x]
+						piece.add_legal_move(tempPosition)
+						piece.add_castle_move(tempPosition,castle_count)
+						break
+				if square.get_threatened_by_opposite(piece.get_pieceColor()) && castle_count < 2:
+					break
+				castle_count += 1
+				tempPosition += vector
 
 func play_random_sound():
 	var random_index = randi() % sounds.size()
