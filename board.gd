@@ -358,6 +358,7 @@ func _after_place_piece(color):
 	fiftymove_limit_check()
 	test_check_stale()
 	$Log.append_log(log_entry)
+	reset_moves()
 
 func fiftymove_limit_check():
 	fiftyMove_count += 1
@@ -417,23 +418,49 @@ func has_legal_moves(color:int):
 	return check
 
 func calculate_illegal_moves():
+	var tempSquares = Squares.duplicate(true)
 	for i in range(size):
 		for j in range(size):
-			var tempSquares = Squares.duplicate(true)
 			if tempSquares[i][j].get_piece() != null:
 				var BoardPosition = tempSquares[i][j].get_boardPosition()
 				var piece = tempSquares[i][j].get_piece()
 				var legal_moves = piece.get_legal_moves()
 				var temp_legal_moves = legal_moves.duplicate(true)
 				for move in temp_legal_moves:
-					tempSquares = Squares.duplicate(true)
-					$BoardState_Tester.set_squares(tempSquares)
-					$BoardState_Tester.set_has_entry($Log.get_has_entry())
-					if $Log.get_has_entry():
-						$BoardState_Tester.set_latest_entry($Log.latest_log())
-					var check = $BoardState_Tester.move_piece(BoardPosition.y,BoardPosition.x,move.y,move.x)
+					var check = calculate_illegal_move(BoardPosition.y,BoardPosition.x,move.y,move.x)
 					if check:
 						piece.add_illegal_move(move)
+
+func calculate_illegal_move(oldRow: int, oldCol: int, newRow: int, newCol: int):
+	var color = Squares[oldRow][oldCol].get_piece().get_pieceColor()
+	var captured_piece
+	if Squares[newRow][newCol].get_piece() != null:
+		captured_piece = remove_piece(newRow, newCol)
+	var picked_up_piece = remove_piece(oldRow,oldCol)
+	var has_moved = picked_up_piece.get_has_moved()
+	picked_up_piece.set_has_moved(true)
+	add_piece(picked_up_piece,newRow, newCol)
+	reset_moves()
+	var check = check_check_bool(color)
+	var replace_piece = remove_piece(newRow,newCol)
+	if !has_moved:
+		replace_piece.set_has_moved(false)
+	add_piece(replace_piece,oldRow, oldCol)
+	if captured_piece != null:
+		add_piece(captured_piece,newRow,newCol)
+	reset_moves()
+	return check
+
+func check_check_bool(color: int):
+	for i in range(size):
+		for j in range(size):
+			var square = Squares[i][j]
+			if square.get_piece() != null:
+				var piece = square.get_piece()
+				if piece.get_pieceType() == 0 && piece.get_pieceColor() == color:
+					if square.get_threatened_by_opposite(piece.get_pieceColor()):
+						return true
+	return false
 
 
 func increment_turn_count():
@@ -462,9 +489,14 @@ func get_check(color: int):
 		return black_in_check
 
 func reset_moves():
-	get_tree().call_group("pieces", "empty_legal_moves")
-	get_tree().call_group("pieces", "empty_en_passant_moves")
-	get_tree().call_group("pieces", "empty_castle_moves")
+	for i in range(size):
+		for j in range(size):
+			var square = Squares[i][j]
+			if square.get_piece() != null:
+				var piece = square.get_piece()
+				piece.empty_legal_moves()
+				piece.empty_en_passant_moves()
+				piece.empty_castle_moves()
 	if picked_up_piece != null:
 		picked_up_piece.empty_legal_moves()
 		picked_up_piece.empty_en_passant_moves()
