@@ -55,7 +55,6 @@ func _ready():
 			var letMarking = preload("res://let_markings.tscn").instantiate()
 			letMarking.initialize(9,j)
 			add_child(letMarking)
-			
 		Squares.append(row)
 	starting_positions()
 	reset_moves()
@@ -72,15 +71,13 @@ func restart_game():
 	black_in_check = false
 	$End_Message.set_visible(false)
 	$Log.reset_log()
-	for i in range(size):
-		for j in range(size):
-			var square = Squares[i][j]
-			square.set_turn_count(0)
-			square.set_active(true)
-			if square.get_piece() != null:
-				var piece = square.get_piece()
-				square.set_piece(null)
-				piece.queue_free()
+	for square in get_squares():
+		square.set_turn_count(0)
+		square.set_active(true)
+		if square.get_piece() != null:
+			var piece = square.get_piece()
+			square.set_piece(null)
+			piece.queue_free()
 	starting_positions()
 	turn_count = 0
 	get_tree().call_group("squares", "set_is_second_pick",false)
@@ -91,18 +88,14 @@ func restart_game():
 	reset_moves()
 
 func run_movement_check():
-	for i in range(size):
-		for j in range(size):
-			var square = Squares[i][j]
-			if square.get_piece() != null:
-				_check_movement_squares(square.get_boardPosition(),square.get_piece())
-
+	for square in get_squares():
+		if square.get_piece() != null:
+			_check_movement_squares(square.get_boardPosition(),square.get_piece())
 
 func set_threatened_squares():
 	get_tree().call_group("squares", "set_threatened_by_white",false)
 	get_tree().call_group("squares", "set_threatened_by_black",false)
-	var squares = get_tree().get_nodes_in_group("squares")
-	for square in squares:
+	for square in get_squares():
 		if square.get_piece() != null:
 			var piece = square.get_piece()
 			var color = piece.get_pieceColor()
@@ -169,6 +162,13 @@ func test_positions():
 	add_piece(create_piece(5,1),3,1)
 	add_piece(create_piece(5,0),1,2)
 	add_piece(create_piece(0,1),6,5)
+
+func get_squares():
+	var squares = []
+	for i in range(size):
+		for j in range(size):
+			squares.append(Squares[i][j])
+	return squares
 
 func move_piece(oldRow: int, oldCol: int, newRow: int, newCol: int):
 	if Squares[newRow][newCol].get_piece() != null:
@@ -347,18 +347,17 @@ func _after_place_piece(color):
 		log_entry.set_check(white_in_check)
 	get_tree().call_group("pieces", "empty_illegal_moves")
 	calculate_illegal_moves()
-	$Log.append_log(log_entry)
 	reset_moves()
-	for i in range(size):
-		for j in range(size):
-			if Squares[i][j].get_piece() != null:
-				var piece = Squares[i][j].get_piece()
-				var illegal_moves = piece.get_illegal_moves()
-				for move in illegal_moves:
-					piece.remove_legal_move(move)
+	for square in get_squares():
+		if square.get_piece() != null:
+			var piece = square.get_piece()
+			var illegal_moves = piece.get_illegal_moves()
+			for move in illegal_moves:
+				piece.remove_legal_move(move)
 	threefold_repetition_check()
 	fiftymove_limit_check()
 	test_check_stale()
+	$Log.append_log(log_entry)
 
 func fiftymove_limit_check():
 	fiftyMove_count += 1
@@ -372,15 +371,13 @@ func threefold_repetition_check():
 	var colorSymbol = ["W","B"]
 	var pieceSymbol = ["K","Q","B","N","R","P"]
 	var boardStateString = ""
-	for i in range(size):
-		for j in range(size):
-			var square = Squares[i][j]
-			if square.get_piece() != null:
-				var piece = square.get_piece()
-				boardStateString += colorSymbol[piece.get_pieceColor()]
-				boardStateString += pieceSymbol[piece.get_pieceType()]
-			else:
-				boardStateString += "-"
+	for square in get_squares():
+		if square.get_piece() != null:
+			var piece = square.get_piece()
+			boardStateString += colorSymbol[piece.get_pieceColor()]
+			boardStateString += pieceSymbol[piece.get_pieceType()]
+		else:
+			boardStateString += "-"
 	if !boardState_list.has(boardStateString):
 		boardState_list[boardStateString] = 0
 	boardState_list[boardStateString] += 1
@@ -410,8 +407,7 @@ func end_message(message):
 
 func has_legal_moves(color:int):
 	var check = false
-	var squares = get_tree().get_nodes_in_group("squares")
-	for square in squares:
+	for square in get_squares():
 		if square.get_piece() != null:
 			var piece = square.get_piece()
 			if piece.get_pieceColor() == color:
@@ -419,6 +415,7 @@ func has_legal_moves(color:int):
 				if legal_moves.size() > 0:
 					check = true
 	return check
+
 func calculate_illegal_moves():
 	for i in range(size):
 		for j in range(size):
@@ -444,8 +441,7 @@ func increment_turn_count():
 	get_tree().call_group("squares", "increment_turn_count")
 
 func check_check():
-	var squares = get_tree().get_nodes_in_group("squares")
-	for square in squares:
+	for square in get_squares():
 		if square.get_piece() != null:
 			var piece = square.get_piece()
 			if piece.get_pieceType() == 0:

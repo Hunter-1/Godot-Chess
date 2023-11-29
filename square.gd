@@ -103,23 +103,19 @@ func get_threatened_by_opposite(color: int):
 
 func _on_input_event(viewport, event, shape_idx):
 	if event.is_action_pressed("Click") && active:
-		if !is_second_pick:
-			if piece != null:
-				if turn_count % 2 == piece.get_pieceColor():
-					piece.set_is_picked_up(true)
-					emit_signal("piece_clicked",boardPosition,piece)
-			else:
-				pass
+		if !is_second_pick && piece != null && turn_count % 2 == piece.get_pieceColor():
+			piece.set_is_picked_up(true)
+			emit_signal("piece_clicked",boardPosition,piece)
 		else:
-			if (is_pickable):
-				if (piece == null):
-					if (is_en_passant):
-						emit_signal("en_passant",boardPosition)
-					elif (castle_count > 0):
-						emit_signal("castle", boardPosition, castle_count)
-					else:
-						emit_signal("move_piece",boardPosition)
-				else:
-					emit_signal("capture_piece",boardPosition)
-			else:
+			if (!is_pickable):
 				emit_signal("no_piece",boardPosition)
+			elif (piece != null):
+				emit_signal("capture_piece",boardPosition)
+			elif (is_en_passant):
+				emit_signal("en_passant",boardPosition)
+			elif (castle_count > 0):
+				emit_signal("castle", boardPosition, castle_count)
+			else:
+				emit_signal("move_piece",boardPosition)
+
+

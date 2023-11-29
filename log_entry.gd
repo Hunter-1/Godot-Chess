@@ -20,7 +20,11 @@ var stalemate: bool = false
 
 func print_string():
 	var output = ""
-	if castle_count == 0:
+	if castle_count > 0:
+		for i in range(castle_count):
+			output += "O-"
+		output = output.left(output.length() - 1)
+	else:
 		output += pieceSymbol[pieceType]
 		output += alphabet[oldPosition.x]
 		output += str(oldPosition.y + 1)
@@ -33,10 +37,6 @@ func print_string():
 		if (promotionPieceType > 0):
 			output += "="
 			output += pieceSymbol[promotionPieceType]
-	else:
-		for i in range(castle_count):
-			output += "O-"
-		output = output.left(output.length() - 1)
 	if checkmate:
 		output += "#"
 	elif stalemate:
@@ -50,7 +50,6 @@ func create_entry(color:int,type:int,old:Vector2i,new:Vector2i):
 	pieceType = type
 	oldPosition = old
 	newPosition = new
-	
 
 func get_capture(): 
 	return capture
@@ -105,7 +104,6 @@ func get_stalemate():
 
 func set_stalemate(boolean: bool):
 	stalemate = boolean
-
 
 func get_promotionPieceType():
 	return promotionPieceType
