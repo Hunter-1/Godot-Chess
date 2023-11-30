@@ -347,6 +347,13 @@ func _after_place_piece(color):
 		log_entry.set_check(white_in_check)
 	get_tree().call_group("pieces", "empty_illegal_moves")
 	calculate_illegal_moves()
+	reset_moves()
+	for square in get_squares():
+		if square.get_piece() != null:
+			var piece = square.get_piece()
+			var illegal_moves = piece.get_illegal_moves()
+			for move in illegal_moves:
+				piece.remove_legal_move(move)
 	threefold_repetition_check()
 	fiftymove_limit_check()
 	test_check_stale()
