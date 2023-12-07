@@ -29,6 +29,10 @@ window/size/resizable=false
 
 project/assembly_name="Chess"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
 [input]
 
 Click={

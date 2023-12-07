@@ -1,3 +1,4 @@
+class_name Board
 extends Area2D
 
 var Squares = []
@@ -23,18 +24,24 @@ var white_in_check: bool = false
 var black_in_check: bool = false
 
 var sounds = [
-	preload("res://art/sound1.wav"), 
-	preload("res://art/sound2.wav"), 
-	preload("res://art/sound3.wav"), 
-	preload("res://art/sound4.wav")
+	preload("res://audio/sound1.wav"), 
+	preload("res://audio/sound2.wav"), 
+	preload("res://audio/sound3.wav"), 
+	preload("res://audio/sound4.wav")
 	]
 		
 var pick_sounds = [ 
-	preload("res://art/sound6.wav"), 
-	preload("res://art/sound7.wav"), 
+	preload("res://audio/sound6.wav"), 
+	preload("res://audio/sound7.wav"), 
 	]
 
 func _ready():
+	init_squares()
+	init_markings()
+	starting_positions()
+	reset_moves()
+
+func init_squares():
 	for i in range(size):
 		var row = []
 		for j in range(size):
@@ -49,16 +56,16 @@ func _ready():
 			square.connect("no_piece", self._on_no_piece)
 			square.connect("en_passant", self._on_en_passant)
 			square.connect("castle", self._on_castle)
-			var numMarking = preload("res://markings.tscn").instantiate()
-			numMarking.initialize(j,-1)
-			add_child(numMarking)
-			var letMarking = preload("res://let_markings.tscn").instantiate()
-			letMarking.initialize(9,j)
-			add_child(letMarking)
 		Squares.append(row)
-	starting_positions()
-	reset_moves()
-	reset_moves()
+
+func init_markings():
+	for j in range(size):
+		var numMarking = preload("res://markings.tscn").instantiate()
+		numMarking.initialize(j,-1)
+		add_child(numMarking)
+		var letMarking = preload("res://let_markings.tscn").instantiate()
+		letMarking.initialize(9,j)
+		add_child(letMarking)
 
 func restart_game():
 	if promotion != null:

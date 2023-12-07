@@ -1,3 +1,4 @@
+class_name Piece
 extends Area2D
 
 signal piece_clicked(pieceColor: int, pieceType: int)

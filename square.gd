@@ -1,3 +1,4 @@
+class_name Square
 extends Area2D
 
 signal piece_clicked(boardPosition: Vector2i, piece)

@@ -1,13 +1,7 @@
-res://game.tscn
+res://tests/unit/test_example.gd
 res://board.gd
 res://square.gd
-res://piece.tscn
-res://square.tscn
-res://board.tscn
-res://log.tscn
-res://log_entry.tscn
-res://markings.tscn
-res://let_markings.tscn
-res://log.gd
-res://markings.gd
+res://tests/unit/board_creation.gd
+res://tests/unit/test_board_creation.gd
+res://tests/unit/test_board_creation.tscn
 res://piece.gd
